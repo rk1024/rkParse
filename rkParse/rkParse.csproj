@@ -40,21 +40,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Lexer.cs" />
+    <Compile Include="Core\Lexicon.cs" />
+    <Compile Include="Core\LexingContext.cs" />
+    <Compile Include="Core\Staging\BranchedStagingCache.cs" />
+    <Compile Include="Core\Staging\IStagingCacheParent.cs" />
+    <Compile Include="Core\Staging\StagingCache.cs" />
+    <Compile Include="Core\Staging\StagingCacheBase.cs" />
+    <Compile Include="Core\Steps\RecursiveLexerStep.cs" />
+    <Compile Include="Core\Steps\LexerStep.cs" />
+    <Compile Include="Core\Symbols\Symbol.cs" />
+    <Compile Include="IO\BufferedReader.cs" />
     <Compile Include="IO\BufferedStreamReader.cs" />
-    <Compile Include="Lexical\ILexer.cs" />
-    <Compile Include="Lexical\Lexer.cs" />
-    <Compile Include="Lexical\SymbolFactories\ISymbolFactory.cs" />
-    <Compile Include="Lexical\ILexicon.cs" />
-    <Compile Include="Lexical\SymbolFactories\ISymbolSequencer.cs" />
-    <Compile Include="Lexical\SymbolFactories\ProductionFactory.cs" />
-    <Compile Include="Lexical\SymbolFactories\ProductionOneOfFactory.cs" />
-    <Compile Include="Lexical\SymbolFactories\StringSymbolFactory.cs" />
-    <Compile Include="Lexical\SymbolFactories\SymbolSeqSingle.cs" />
-    <Compile Include="Lexical\SymbolFactories\SymbolSequencer.cs" />
-    <Compile Include="Lexical\Symbols\ISymbol.cs" />
+    <Compile Include="Lexical\LexerOld.cs" />
+    <Compile Include="Lexical\LexingContextOld.cs" />
+    <Compile Include="Lexical\LexiconOld.cs" />
+    <Compile Include="Lexical\Steps\LexerStepOneOf.cs" />
+    <Compile Include="Lexical\Steps\LexerStep.cs" />
+    <Compile Include="Lexical\Steps\LexerQueryConsumeStep.cs" />
+    <Compile Include="Lexical\Steps\LexerStringStep.cs" />
+    <Compile Include="Lexical\StringLexingContext.cs" />
+    <Compile Include="Lexical\Symbols\SymbolOld.cs" />
     <Compile Include="Lexical\Symbols\Production.cs" />
     <Compile Include="Lexical\Symbols\StringSymbol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

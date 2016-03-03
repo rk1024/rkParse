@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace rkParse.IO {
-  class Dummy : TextReader {
-
-  }
-
   public class BufferedStreamReader : IDisposable {
     private StreamReader reader;
     private StringBuilder buffer;
@@ -84,7 +77,7 @@ namespace rkParse.IO {
       return length;
     }
 
-    public int PeekAhead(out string dest, int start, int count) {
+    public int PeekAhead(out string dest, int start, int count = 1) {
       int length = Buffer(start + count);
       length = Math.Max(0, length - start);
 

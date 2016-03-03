@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace rkParse.Lexical.Symbols {
-  public interface ISymbol {
+namespace rkParse.Core.Staging {
+  public interface IStagingCacheParent {
+    bool IsCacheLocked(StagingCacheBase cache);
   }
 }
