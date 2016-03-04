@@ -8,7 +8,10 @@ namespace rkParse.Core {
 
     List<Symbol> output = new List<Symbol>();
     Stack<StagingCacheBase> caches = new Stack<StagingCacheBase>();
+    Stack<RecursionCache> recurCaches = new Stack<RecursionCache>();
     Lexer lex;
+
+    public Symbol[] Output => output.ToArray();
 
     public LexingContext(Lexer lex) {
       if (!lex.IsReading) throw new InvalidOperationException("Can't make a LexingContext for a Lexer that is not reading.");
@@ -66,6 +69,20 @@ namespace rkParse.Core {
 
     public bool IsCacheLocked(StagingCacheBase cache) {
       return caches.Peek() != cache;
+    }
+
+    public RecursionCache BeginRecursion(int limit) {
+      RecursionCache cache = new RecursionCache(limit);
+
+      recurCaches.Push(cache);
+
+      return cache;
+    }
+
+    public void EndRecursion(RecursionCache cache) {
+      if (cache != recurCaches.Peek()) throw new InvalidOperationException("EndRecursion called on invalid cache.");
+
+      recurCaches.Pop();
     }
   }
 }

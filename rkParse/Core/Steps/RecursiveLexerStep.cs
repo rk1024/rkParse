@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace rkParse.Core.Steps {
   public abstract class RecursiveLexerStep : LexerStep {
-    public override bool IsTerminal => false;
+    public override bool CanBeTerminal => false;
 
     public RecursiveLexerStep(string name = null) : base(name) {
     }

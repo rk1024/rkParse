@@ -2,7 +2,7 @@
   public abstract class LexerStep {
     string name;
 
-    public abstract bool IsTerminal { get; }
+    public abstract bool CanBeTerminal { get; }
 
     public string Name => name;
 
