@@ -30,8 +30,8 @@ namespace rkParseTest {
     public TestLexingContext(TestLexer lex) : base(lex) { }
   }
 
-  class TestLexer : Lexer {
-    public override LexingContext MakeContext() {
+  class TestLexer : Lexer<TestLexingContext> {
+    public override TestLexingContext MakeContext() {
       return new TestLexingContext(this);
     }
 

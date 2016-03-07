@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using rkParse.Core.Symbols;
 
 namespace rkParse.Core.Staging {
-  public class BranchedStagingCache : StagingCacheBase, IStagingCacheParent {
+  public class BranchedStagingCache : StagingCacheBase, ICacheParent<StagingCacheBase> {
     List<StagingCacheBase> branches = new List<StagingCacheBase>();
     StagingCacheBase curr = null;
 
@@ -42,7 +42,7 @@ namespace rkParse.Core.Staging {
       }
     }
 
-    public BranchedStagingCache(IStagingCacheParent parent, int start) : base(parent, start) { }
+    public BranchedStagingCache(ICacheParent<StagingCacheBase> parent, int start) : base(parent, start) { }
 
     protected override void ConsumeInternal(int count) {
       AssertHasBranch();

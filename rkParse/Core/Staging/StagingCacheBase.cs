@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace rkParse.Core.Staging {
   public abstract class StagingCacheBase {
-    IStagingCacheParent parent;
+    ICacheParent<StagingCacheBase> parent;
     int start;
 
     public abstract List<Symbol> Symbols { get; }
@@ -20,7 +20,7 @@ namespace rkParse.Core.Staging {
 
     public bool IsLocked => parent.IsCacheLocked(this);
 
-    public StagingCacheBase(IStagingCacheParent parent, int start) {
+    public StagingCacheBase(ICacheParent<StagingCacheBase> parent, int start) {
       this.parent = parent;
       this.start = start;
     }

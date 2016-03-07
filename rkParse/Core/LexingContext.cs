@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 namespace rkParse.Core {
-  public abstract class LexingContext : IStagingCacheParent {
+  public abstract class LexingContext : ICacheParent<StagingCacheBase>, ICacheParent<RecursionCache> {
 
     List<Symbol> output = new List<Symbol>();
     Stack<StagingCacheBase> caches = new Stack<StagingCacheBase>();
@@ -71,8 +71,12 @@ namespace rkParse.Core {
       return caches.Peek() != cache;
     }
 
+    public bool IsCacheLocked(RecursionCache cache) {
+      return recurCaches.Peek() != cache;
+    }
+
     public RecursionCache BeginRecursion(int limit) {
-      RecursionCache cache = new RecursionCache(limit);
+      RecursionCache cache = new RecursionCache(this, limit);
 
       recurCaches.Push(cache);
 
@@ -83,6 +87,18 @@ namespace rkParse.Core {
       if (cache != recurCaches.Peek()) throw new InvalidOperationException("EndRecursion called on invalid cache.");
 
       recurCaches.Pop();
+    }
+
+    public bool PushRecursion() {
+      if (recurCaches.Count == 0) throw new InvalidOperationException("Cannot call PushRecursion before BeginRecursion.");
+
+      return recurCaches.Peek().PushRecursion();
+    }
+
+    public void PopRecursion() {
+      if (recurCaches.Count == 0) throw new InvalidOperationException("Cannot call PopRecursion before BeginRecursion.");
+
+      recurCaches.Peek().PopRecursion();
     }
   }
 }

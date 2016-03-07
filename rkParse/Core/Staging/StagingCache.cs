@@ -14,7 +14,7 @@ namespace rkParse.Core.Staging {
 
     public override int Consumed => consumed;
 
-    public StagingCache(IStagingCacheParent parent, int start) : base(parent, start) { }
+    public StagingCache(ICacheParent<StagingCacheBase> parent, int start) : base(parent, start) { }
 
     protected override void ConsumeInternal(int count) => consumed += count;
   }

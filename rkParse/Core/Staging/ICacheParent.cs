@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Core.Staging {
-  public interface IStagingCacheParent {
-    bool IsCacheLocked(StagingCacheBase cache);
+  public interface ICacheParent<T> {
+    bool IsCacheLocked(T cache);
   }
 }

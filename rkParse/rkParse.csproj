@@ -44,7 +44,7 @@
     <Compile Include="Core\Lexicon.cs" />
     <Compile Include="Core\LexingContext.cs" />
     <Compile Include="Core\Staging\BranchedStagingCache.cs" />
-    <Compile Include="Core\Staging\IStagingCacheParent.cs" />
+    <Compile Include="Core\Staging\ICacheParent.cs" />
     <Compile Include="Core\Staging\RecursionCache.cs" />
     <Compile Include="Core\Staging\StagingCache.cs" />
     <Compile Include="Core\Staging\StagingCacheBase.cs" />
