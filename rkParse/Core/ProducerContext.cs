@@ -4,19 +4,19 @@ using System;
 using System.Collections.Generic;
 
 namespace rkParse.Core {
-  public abstract class ProducerContext<TLexer> : ICacheParent<StagingCacheBase>, ICacheParent<RecursionCache> where TLexer : Producer {
+  public abstract class ProducerContext : ICacheParent<StagingCacheBase>, ICacheParent<RecursionCache> {
 
     List<Symbol> output = new List<Symbol>();
     Stack<StagingCacheBase> caches = new Stack<StagingCacheBase>();
     Stack<RecursionCache> recurCaches = new Stack<RecursionCache>();
-    TLexer lex;
+    Producer prod;
 
     public Symbol[] Output => output.ToArray();
 
-    public ProducerContext(TLexer lex) {
-      if (!lex.IsReading) throw new InvalidOperationException($"Can't make a LexingContext for a {typeof(TLexer).Name} that is not reading.");
+    public ProducerContext(Producer prod) {
+      if (!prod.IsReading) throw new InvalidOperationException($"Can't make a LexingContext for a Producer that is not reading.");
 
-      this.lex = lex;
+      this.prod = prod;
     }
 
     public void AddSymbols(IEnumerable<Symbol> symbols) {

@@ -4,7 +4,7 @@ using System;
 using System.Text.RegularExpressions;
 
 namespace rkParse.Lexical {
-  public class StringLexingContext : LexingContext {
+  public class StringLexingContext : ProducerContext {
     public StringLexingContext(Lexer lex) : base(lex) { }
 
     public bool QueryString(string pat, int start = 0) {

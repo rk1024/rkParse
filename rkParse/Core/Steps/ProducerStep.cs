@@ -1,5 +1,5 @@
 ﻿namespace rkParse.Core.Steps {
-  public abstract class ProducerStep {
+  public abstract class ProducerStep<TContext> where TContext : ProducerContext {
     string name;
 
     public abstract bool CanBeTerminal { get; }
@@ -10,6 +10,6 @@
       this.name = name;
     }
 
-    public abstract bool Execute(LexingContext ctx);
+    public abstract bool Execute(TContext ctx);
   }
 }

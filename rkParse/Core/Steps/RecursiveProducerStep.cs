@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Core.Steps {
-  public abstract class RecursiveProducerStep : ProducerStep {
+  public abstract class RecursiveProducerStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext {
     public override bool CanBeTerminal => false;
 
     public RecursiveProducerStep(string name = null) : base(name) {
@@ -19,9 +19,9 @@ namespace rkParse.Core.Steps {
     /// <param name="ctx">The current lexing context.</param>
     /// <param name="canRecurse">Indicates whether another nonterminal step can be run.</param>
     /// <returns>True if this step was successfully executed; false otherwise.</returns>
-    protected abstract bool Execute(ProducerContext ctx, bool canRecurse);
+    protected abstract bool Execute(TContext ctx, bool canRecurse);
 
-    bool Execute(ProducerContext ctx, int recurDepth) {
+    bool Execute(TContext ctx, int recurDepth) {
       Console.Write($"Executing, recursion depth {recurDepth}...");
 
       bool canRecurse = recurDepth > 0;
@@ -41,7 +41,7 @@ namespace rkParse.Core.Steps {
       return false;
     }
 
-    public override bool Execute(ProducerContext ctx) {
+    public override bool Execute(TContext ctx) {
       int lim = 0;
 
       BranchedStagingCache cache = ctx.BeginStagingBranched();

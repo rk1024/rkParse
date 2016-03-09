@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 
 namespace rkParse.Core {
-  public class Lexicon {
-    Dictionary<string, ProducerStep> steps = new Dictionary<string, ProducerStep>();
+  public class Lexicon<TContext> where TContext : ProducerContext {
+    Dictionary<string, ProducerStep<TContext>> steps = new Dictionary<string, ProducerStep<TContext>>();
     string rootStep;
 
     public string RootStep {
@@ -17,8 +17,8 @@ namespace rkParse.Core {
 
     public Lexicon() { }
 
-    public ProducerStep this[string key] => steps[key];
+    public ProducerStep<TContext> this[string key] => steps[key];
 
-    public void Add(ProducerStep step) => steps.Add(step.Name, step);
+    public void Add(ProducerStep<TContext> step) => steps.Add(step.Name, step);
   }
 }

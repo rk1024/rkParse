@@ -7,47 +7,10 @@ using rkParse.Core;
 using rkParse.Core.Symbols;
 
 namespace rkParseTest {
-  class TestProductionStep : RecursiveProducerStep {
-    Random rand = new Random();
-
-    protected override bool Execute(LexingContext ctx, bool canRecurse) {
-      if (rand.NextDouble() < .99) {
-        ctx.Consume(1);
-        ctx.AddSymbol(new Symbol("Test"));
-        return true;
-      }
-      return false;
-    }
-
-    public TestProductionStep(string name = null) : base(name) { }
-  }
-
-  class TestLexingContext : LexingContext {
-    protected override void ConsumeInternal(int count) {
-      Console.WriteLine($"Consumed {count} character(s).");
-    }
-
-    public TestLexingContext(TestLexer lex) : base(lex) { }
-  }
-
-  class TestLexer : Producer<TestLexingContext> {
-    public override TestLexingContext MakeContext() {
-      return new TestLexingContext(this);
-    }
-
-    public TestLexer(Lexicon lcon) : base(lcon) { }
-  }
-
   class Program {
     static void Main(string[] args) {
-      Lexicon lcon = new Lexicon();
-      Producer lex = new TestLexer(lcon);
-
-      lcon.Add(new TestProductionStep("Test"));
-
-      lcon.RootStep = "Test";
-
-      lex.Read();
+      Lexicon<LexerContext> lcon = new Lexicon<LexerContext>();
+      Lexer lex = new Lexer(lcon);
 
       Console.CursorVisible = false;
       Console.WriteLine("Press any key to continue...");

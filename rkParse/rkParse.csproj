@@ -55,7 +55,7 @@
     <Compile Include="IO\BufferedStreamReader.cs" />
     <Compile Include="Lexical\Lexer.cs" />
     <Compile Include="Lexical\LexerOld.cs" />
-    <Compile Include="Lexical\LexingContext.cs" />
+    <Compile Include="Lexical\LexerContext.cs" />
     <Compile Include="Lexical\LexingContextOld.cs" />
     <Compile Include="Lexical\LexiconOld.cs" />
     <Compile Include="Lexical\Steps\LexerStepOneOf.cs" />
