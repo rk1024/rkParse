@@ -8,20 +8,23 @@ using rkParse.Core.Symbols;
 using rkParse.IO;
 
 namespace rkParse.Lexical {
-  public class Lexer : Producer<LexerContext> {
+  public class Lexer : Producer<string, LexerContext> {
     BufferedReader reader;
 
     public Lexer(Lexicon<LexerContext> lexicon) : base(lexicon) {
     }
 
-    public override LexerContext MakeContext() {
+    protected override LexerContext MakeContext() {
       return new LexerContext(this, reader);
     }
 
-    public Symbol[] Read(string input) {
+    public override Symbol[] Read(string input) {
       BeginRead();
 
-      return EndRead();
+
+
+      EndRead();
+      return new Symbol[] { };
     }
   }
 }

@@ -14,7 +14,7 @@ namespace rkParse.Lexical {
       this.reader = reader;
     }
 
-    protected override void ConsumeInternal(int count) {
+    protected override int ConsumeInternal(int count) {
       throw new NotImplementedException();
     }
   }
