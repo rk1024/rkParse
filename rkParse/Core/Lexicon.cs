@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace rkParse.Core {
   public class Lexicon {
-    Dictionary<string, LexerStep> steps = new Dictionary<string, LexerStep>();
+    Dictionary<string, ProducerStep> steps = new Dictionary<string, ProducerStep>();
     string rootStep;
 
     public string RootStep {
@@ -17,8 +17,8 @@ namespace rkParse.Core {
 
     public Lexicon() { }
 
-    public LexerStep this[string key] => steps[key];
+    public ProducerStep this[string key] => steps[key];
 
-    public void Add(LexerStep step) => steps.Add(step.Name, step);
+    public void Add(ProducerStep step) => steps.Add(step.Name, step);
   }
 }

@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 
 namespace rkParse.Core {
-  public abstract class Lexer {
+  public abstract class Producer {
     protected Lexicon lexicon;
     protected bool isReading = false;
 
     public Lexicon Lexicon => lexicon;
     public bool IsReading => isReading;
 
-    public Lexer(Lexicon lexicon) {
+    public Producer(Lexicon lexicon) {
       this.lexicon = lexicon;
     }
 
     public abstract Symbol[] Read();
   }
 
-  public abstract class Lexer<TContext> : Lexer where TContext : LexingContext {
-    public Lexer(Lexicon lexicon) : base(lexicon) { }
+  public abstract class Producer<TContext> : Producer where TContext : LexingContext {
+    public Producer(Lexicon lexicon) : base(lexicon) { }
 
     public abstract TContext MakeContext();
 

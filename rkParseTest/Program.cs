@@ -7,7 +7,7 @@ using rkParse.Core;
 using rkParse.Core.Symbols;
 
 namespace rkParseTest {
-  class TestProductionStep : RecursiveLexerStep {
+  class TestProductionStep : RecursiveProducerStep {
     Random rand = new Random();
 
     protected override bool Execute(LexingContext ctx, bool canRecurse) {
@@ -30,7 +30,7 @@ namespace rkParseTest {
     public TestLexingContext(TestLexer lex) : base(lex) { }
   }
 
-  class TestLexer : Lexer<TestLexingContext> {
+  class TestLexer : Producer<TestLexingContext> {
     public override TestLexingContext MakeContext() {
       return new TestLexingContext(this);
     }
@@ -41,7 +41,7 @@ namespace rkParseTest {
   class Program {
     static void Main(string[] args) {
       Lexicon lcon = new Lexicon();
-      Lexer lex = new TestLexer(lcon);
+      Producer lex = new TestLexer(lcon);
 
       lcon.Add(new TestProductionStep("Test"));
 

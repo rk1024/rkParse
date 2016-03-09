@@ -40,16 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Lexer.cs" />
+    <Compile Include="Core\Producer.cs" />
     <Compile Include="Core\Lexicon.cs" />
-    <Compile Include="Core\LexingContext.cs" />
+    <Compile Include="Core\ProducerContext.cs" />
     <Compile Include="Core\Staging\BranchedStagingCache.cs" />
     <Compile Include="Core\Staging\ICacheParent.cs" />
     <Compile Include="Core\Staging\RecursionCache.cs" />
     <Compile Include="Core\Staging\StagingCache.cs" />
     <Compile Include="Core\Staging\StagingCacheBase.cs" />
-    <Compile Include="Core\Steps\RecursiveLexerStep.cs" />
-    <Compile Include="Core\Steps\LexerStep.cs" />
+    <Compile Include="Core\Steps\RecursiveProducerStep.cs" />
+    <Compile Include="Core\Steps\ProducerStep.cs" />
     <Compile Include="Core\Symbols\Symbol.cs" />
     <Compile Include="IO\BufferedReader.cs" />
     <Compile Include="IO\BufferedStreamReader.cs" />

@@ -1,12 +1,12 @@
 ﻿namespace rkParse.Core.Steps {
-  public abstract class LexerStep {
+  public abstract class ProducerStep {
     string name;
 
     public abstract bool CanBeTerminal { get; }
 
     public string Name => name;
 
-    public LexerStep(string name = null) {
+    public ProducerStep(string name = null) {
       this.name = name;
     }
 
