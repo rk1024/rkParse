@@ -19,7 +19,7 @@ namespace rkParse.Lexical {
       throw new NotImplementedException();
     }
 
-    protected override void ConsumeInternal(int count) {
+    protected override int ConsumeInternal(int count) {
       throw new NotImplementedException();
     }
   }

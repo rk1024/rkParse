@@ -29,7 +29,7 @@ namespace rkParse.Core {
       else caches.Peek().Symbols.Add(symbol);
     }
 
-    protected abstract void ConsumeInternal(int count);
+    protected abstract int ConsumeInternal(int count);
 
     public void Consume(int count) {
       if (caches.Count == 0) ConsumeInternal(count);
