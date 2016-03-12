@@ -1,5 +1,5 @@
 ﻿namespace rkParse.Lexical.Steps {
-  public abstract class LexerQueryConsumeStep : LexerStep {
+  public abstract class LexerQueryConsumeStep : LexerStepOld {
     public LexerQueryConsumeStep(string name) : base(name) { }
 
     public LexerQueryConsumeStep() : base() { }

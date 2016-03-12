@@ -6,19 +6,19 @@ namespace rkParse.Lexical.Steps {
     BreadthFirst,
   }
 
-  public abstract class LexerStepOneOf : LexerStep {
-    LexerStep[] steps;
+  public abstract class LexerStepOneOf : LexerStepOld {
+    LexerStepOld[] steps;
     RecurseMode mode;
 
-    public LexerStepOneOf(LexerStep[] steps, RecurseMode mode = RecurseMode.DepthFirst) {
+    public LexerStepOneOf(LexerStepOld[] steps, RecurseMode mode = RecurseMode.DepthFirst) {
       this.steps = steps;
       this.mode = mode;
     }
 
     protected abstract bool QueryTerminal(LexingContextOld ctx, out int count, int start = 0);
 
-    bool GetPathBFS(LexingContextOld ctx, Stack<LexerStep> path, int depth, int start = 0) {
-      foreach (LexerStep step in steps) {
+    bool GetPathBFS(LexingContextOld ctx, Stack<LexerStepOld> path, int depth, int start = 0) {
+      foreach (LexerStepOld step in steps) {
         if (depth > 0 && step is LexerStepOneOf) {
           (step as LexerStepOneOf).GetPathBFS(ctx, path, depth - 1, start);
         }

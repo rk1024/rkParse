@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace rkParse.Lexical {
-  public class LexerContext : ProducerContext {
+  public class LexerContext : ProducerContext<LexerContext> {
     BufferedStreamReader reader;
 
     public LexerContext(Lexer prod, BufferedStreamReader reader) : base(prod) {

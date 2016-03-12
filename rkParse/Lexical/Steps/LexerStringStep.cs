@@ -1,29 +1,28 @@
-﻿using rkParse.Lexical.Symbols;
+﻿using rkParse.Core.Symbols;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace rkParse.Lexical.Steps {
-  public class LexerStringStep : LexerQueryConsumeStep {
-    string pat;
+  public class LexerStringStep : LexerStep {
+    string pattern;
 
-    public string Pattern => pat;
+    public override bool CanBeTerminal => true;
 
-    public LexerStringStep(string name, string pat) : base(name) {
-      this.pat = pat;
+    public LexerStringStep(string name, string pattern) : base(name) {
+      this.pattern = pattern;
     }
 
-    public LexerStringStep(string pat) : this(null, pat) { }
+    public LexerStringStep(string pattern) : this(null, pattern) { }
 
-    public override bool Query(LexingContextOld ctx, out int count, int start = 0) {
-      if (ctx.QueryString(Pattern, start)) {
-        count = Pattern.Length;
-        return true;
-      }
+    public override bool Execute(LexerContext ctx) {
+      bool match = ctx.QueryString(pattern);
 
-      count = 0;
-      return false;
-    }
+      if (match) ctx.AddSymbol(new Symbol(Name));
 
-    public override void Consume(LexingContextOld ctx, int count) {
-      ctx.AddSymbol(new StringSymbol(Name, Pattern));
+      return match;
     }
   }
 }

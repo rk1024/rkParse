@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using rkParse.Core.Symbols;
 using rkParse.IO;
+using System.IO;
 
 namespace rkParse.Lexical {
   public class Lexer : Producer<string, LexerContext> {
-    BufferedReader reader;
+    BufferedStreamReader reader;
 
-    public Lexer(Lexicon<LexerContext> lexicon) : base(lexicon) {
-    }
+    public Lexer(Stream stream) { reader = new BufferedStreamReader(stream); }
 
     protected override LexerContext MakeContext() {
       return new LexerContext(this, reader);
@@ -21,10 +21,12 @@ namespace rkParse.Lexical {
     public override Symbol[] Read(string input) {
       BeginRead();
 
+      Context.Execute(Steps.RootStep);
 
+      Symbol[] ret = Context.Output;
 
       EndRead();
-      return new Symbol[] { };
+      return ret;
     }
   }
 }

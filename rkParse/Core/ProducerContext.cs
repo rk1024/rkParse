@@ -1,4 +1,5 @@
 ﻿using rkParse.Core.Staging;
+using rkParse.Core.Steps;
 using rkParse.Core.Symbols;
 using System;
 using System.Collections.Generic;
@@ -100,5 +101,13 @@ namespace rkParse.Core {
 
       recurCaches.Peek().PopRecursion();
     }
+  }
+
+  public abstract class ProducerContext<TThis> : ProducerContext where TThis : ProducerContext {
+    public bool Execute(ProducerStep<TThis> step) {
+      return step.Execute(this as TThis);
+    }
+
+    public ProducerContext(Producer prod) : base(prod) { }
   }
 }

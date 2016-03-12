@@ -5,17 +5,24 @@ using System;
 using System.IO;
 using rkParse.Core;
 using rkParse.Core.Symbols;
+using rkParse.Lexical.Steps;
 
 namespace rkParseTest {
   class Program {
     static void Main(string[] args) {
-      Lexicon<LexerContext> lcon = new Lexicon<LexerContext>();
-      Lexer lex = new Lexer(lcon);
+      using (var stream = new MemoryStream())
+      using (var writer = new StreamWriter(stream)) {
+        Lexer lexer = new Lexer(stream);
 
-      Console.CursorVisible = false;
-      Console.WriteLine("Press any key to continue...");
-      Console.ReadKey(true);
-      Console.CursorVisible = true;
+        lexer.Steps.Add(new LexerStringStep("Test"));
+
+        writer.WriteLine("Test");
+
+        Console.CursorVisible = false;
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey(true);
+        Console.CursorVisible = true;
+      }
     }
 
     static void _Main(string[] args) {

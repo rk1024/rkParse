@@ -48,6 +48,7 @@
     <Compile Include="Core\Staging\RecursionCache.cs" />
     <Compile Include="Core\Staging\StagingCache.cs" />
     <Compile Include="Core\Staging\StagingCacheBase.cs" />
+    <Compile Include="Core\Steps\NamedProducerStep.cs" />
     <Compile Include="Core\Steps\RecursiveProducerStep.cs" />
     <Compile Include="Core\Steps\ProducerStep.cs" />
     <Compile Include="Core\Symbols\Symbol.cs" />
@@ -58,10 +59,12 @@
     <Compile Include="Lexical\LexerContext.cs" />
     <Compile Include="Lexical\LexingContextOld.cs" />
     <Compile Include="Lexical\LexiconOld.cs" />
-    <Compile Include="Lexical\Steps\LexerStepOneOf.cs" />
     <Compile Include="Lexical\Steps\LexerStep.cs" />
+    <Compile Include="Lexical\Steps\LexerStepOneOf.cs" />
+    <Compile Include="Lexical\Steps\LexerStepOld.cs" />
     <Compile Include="Lexical\Steps\LexerQueryConsumeStep.cs" />
     <Compile Include="Lexical\Steps\LexerStringStep.cs" />
+    <Compile Include="Lexical\Steps\LexerStringStepOld.cs" />
     <Compile Include="Lexical\StringLexingContext.cs" />
     <Compile Include="Lexical\Symbols\SymbolOld.cs" />
     <Compile Include="Lexical\Symbols\Production.cs" />
