@@ -5,12 +5,12 @@ using System.IO;
 namespace rkParse.Util {
   public static class StringExtensions {
     public static string ToLiteral(this string input) {
-      using (var writer = new StringWriter()) {
-        using (var provider = CodeDomProvider.CreateProvider("CSharp")) {
-          provider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), writer, null);
-          return writer.ToString();
-        }
+      using (var writer = new StringWriter())
+      using (var provider = CodeDomProvider.CreateProvider("CSharp")) {
+        provider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), writer, null);
+        return writer.ToString();
       }
+
     }
   }
 }
