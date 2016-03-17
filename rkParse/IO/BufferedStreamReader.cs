@@ -18,7 +18,7 @@ namespace rkParse.IO {
       reader.Dispose();
     }
 
-    int Buffer(int count) {
+    public int Buffer(int count) {
       if (count == 1) return Buffer();
 
       if (buffer.Length < count) {
@@ -34,7 +34,7 @@ namespace rkParse.IO {
       return count;
     }
 
-    int Buffer() {
+    public int Buffer() {
       if (buffer.Length == 0) {
         char ch = (char)reader.Read();
 

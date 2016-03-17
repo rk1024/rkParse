@@ -1,7 +1,8 @@
-﻿using rkParse.Util;
+﻿using rkParse.Core.Symbols;
+using rkParse.Util;
 
 namespace rkParse.Lexical.Symbols {
-  public class StringSymbol : SymbolOld {
+  public class StringSymbol : Symbol {
     string text;
 
     public string Text => text;
@@ -13,7 +14,7 @@ namespace rkParse.Lexical.Symbols {
     public StringSymbol(string text) : this(null, text) { }
 
     public override string ToString() {
-      return Name == null ? $"<{Text}>" : $"{Name}({Text})";
+      return ToString(text);
     }
   }
 }

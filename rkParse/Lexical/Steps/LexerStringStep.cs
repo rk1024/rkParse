@@ -1,4 +1,5 @@
 ﻿using rkParse.Core.Symbols;
+using rkParse.Lexical.Symbols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,10 @@ namespace rkParse.Lexical.Steps {
     public override bool Execute(LexerContext ctx) {
       bool match = ctx.QueryString(pattern);
 
-      if (match) ctx.AddSymbol(new Symbol(Name));
+      if (match) {
+        ctx.AddSymbol(Name == null ? new StringSymbol(null, pattern) : new Symbol(Name));
+        ctx.Consume(pattern.Length);
+      }
 
       return match;
     }

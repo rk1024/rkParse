@@ -3,6 +3,7 @@ using rkParse.Core.Steps;
 using rkParse.Core.Symbols;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace rkParse.Core {
   public abstract class ProducerContext : ICacheParent<StagingCacheBase>, ICacheParent<RecursionCache> {
@@ -11,8 +12,11 @@ namespace rkParse.Core {
     Stack<StagingCacheBase> caches = new Stack<StagingCacheBase>();
     Stack<RecursionCache> recurCaches = new Stack<RecursionCache>();
     Producer prod;
+    int recurDepth = 0, recurLimit = 0;
 
-    public Symbol[] Output => output.ToArray();
+    public List<Symbol> Output => output.ToList();
+
+    protected int Position => caches.Peek().End;
 
     public ProducerContext(Producer prod) {
       if (!prod.IsReading) throw new InvalidOperationException($"Can't make a LexingContext for a Producer that is not reading.");

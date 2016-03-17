@@ -33,10 +33,13 @@ namespace rkParse.Lexical {
       return QueryString(match.ToString());
     }
 
-    public bool QueryRegex(Regex pattern, int count = 1) {
-      string peek;
+    public bool QueryRegex(out string peek, Regex pattern, int count = 1) {
       reader.Peek(out peek, count);
-      return pattern.IsMatch(peek);
+
+      bool match = pattern.IsMatch(peek);
+      if (!match) peek = null;
+
+      return match;
     }
 
     public bool QueryRegexAhead(Regex pattern, int start, int count = 1) {

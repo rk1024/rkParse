@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Core.Steps {
-  public abstract class RecursiveProducerStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext {
+  public abstract class RecursiveStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext {
     public override bool CanBeTerminal => false;
 
-    public RecursiveProducerStep(string name = null) : base(name) {
+    public RecursiveStep(string name = null) : base(name) {
     }
 
     /// <summary>

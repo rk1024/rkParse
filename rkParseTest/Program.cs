@@ -6,196 +6,44 @@ using System.IO;
 using rkParse.Core;
 using rkParse.Core.Symbols;
 using rkParse.Lexical.Steps;
+using rkParse.Util;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace rkParseTest {
   class Program {
     static void Main(string[] args) {
-      using (var stream = new MemoryStream())
-      using (var writer = new StreamWriter(stream)) {
-        Lexer lexer = new Lexer(stream);
+      start:
+      Lexer lexer = new Lexer();
 
-        lexer.Steps.Add(new LexerStringStep("Test"));
+      lexer.Steps.Add(new LexerStringStep("Test", "foo"));
 
-        writer.WriteLine("Test");
+      lexer.Steps.Add(new LexerRegexStep("TestRegex", new Regex(@"[A-Za-z]")));
 
-        Console.CursorVisible = false;
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadKey(true);
-        Console.CursorVisible = true;
-      }
-    }
+      lexer.Steps.RootStepName = "TestRegex";
 
-    static void _Main(string[] args) {
-      LexiconOld lc = new LexiconOld();
+      Console.Write("> ");
 
-      //lc.RegStringSym("Test", "test");
+      string line = Console.ReadLine();
 
-      //lc.RegOneOrMoreProd("Tests", "Test");
+      Console.WriteLine($"Input: {line.ToLiteral()}");
 
-      //lc.RegOneOfProd("Choice", new[] {
-      //  lc.MakeStringSym(" "),
-      //  lc.MakeStringSym("hi"),
-      //  lc.MakeStringSym("there"),
-      //  lc.MakeSeqProd(new[] {
-      //    lc.MakeStringSym("lel").ToSeqStep(),
-      //    lc.MakeOneOrMoreProd(lc.MakeStringSym(" ")).ToSeqStep(),
-      //    lc.MakeStringSym("jk").ToSeqStep(),
-      //  })
-      //}, new[] {
-      //  "Tests"
-      //});
 
-      //lc.RegOneOrMoreProd("Choices", "Choice");
+      Symbol[] symbols;
 
-      //new Producer("Input", delegate (Producer self, LexiconBase lex) {
-      //  self.AddItem(lex["InputSection"], true);
-      //}).Register(lexicon);
+      using (Stream stream = new MemoryStream(Encoding.Default.GetBytes(line)))
+        symbols = lexer.Read(stream);
 
-      lc.RegSeqProd("Input", new[] {
-        lc.MakeSeqStep("InputSection", true),
-      });
+      Console.WriteLine($"Result: [{string.Join<Symbol>(", ", symbols)}]");
 
-      //new ProducerOneOf("InputSection", delegate (ProducerOneOf self, LexiconBase lex) {
-      //  self.AddChoice(lex["InputSectionPart"]);
-      //  self.AddChoice(lex["InputSection"], lex["InputSectionPart"]);
-      //}).Register(lexicon);
+      Console.CursorVisible = false;
+      Console.WriteLine("Press any key to continue...");
+      Console.ReadKey(true);
+      Console.CursorVisible = true;
 
-      lc.RegOneOrMoreProd("InputSection", "InputSectionPart");
+      Console.Clear();
 
-      //new ProducerOneOf("InputSectionPart", delegate (ProducerOneOf self, LexiconBase lex) {
-      //  self.AddChoice(new SymbolSeqItem(lex["InputElements"], true), new SymbolSeqItem(lex["NewLine"]));
-      //  //self.AddChoice(lex["PPDirective"]);
-      //}).Register(lexicon);
-
-      lc.RegOneOfProd("InputSectionPart", new[] {
-        lc.MakeSeqProd(new[] {
-          lc.MakeSeqStep("InputElements", true),
-          lc.MakeSeqStep("NewLine", true),
-        }),
-      });//, new[] {
-         //"PPDirective",
-         //});
-
-      //new ProducerOneOf("InputElements", delegate (ProducerOneOf self, LexiconBase lex) {
-      //  self.AddChoice(lex["InputElement"]);
-      //  self.AddChoice(lex["InputElements"], lex["InputElement"]);
-      //}).Register(lexicon);
-
-      lc.RegOneOrMoreProd("InputElements", "InputElement");
-
-      //new ProducerOneOf("InputElement", delegate (ProducerOneOf self, LexiconBase lex) {
-      //  //self.AddChoice(lex["Whitespace"]);
-      //  self.AddChoice(lex["Comment"]);
-      //  //self.AddChoice(lex["Token"]);
-      //}).Register(lexicon);
-
-      lc.RegOneOfProd("InputElement", new[] {
-        //"Whitespace",
-        "Comment",
-        //"Token",
-      });
-
-      //new ProducerOneOf("NewLine", delegate (ProducerOneOf self, LexiconBase lex) {
-      //  self.AddChoice(lex["CarriageReturn"]);
-      //  self.AddChoice(lex["LineFeed"]);
-      //  self.AddChoice(lex["CarriageReturn"], lex["LineFeed"]);
-      //  self.AddChoice(lex["NextLine"]);
-      //  self.AddChoice(lex["LineSeparator"]);
-      //  self.AddChoice(lex["ParagraphSeparator"]);
-      //}).Register(lexicon);
-
-      lc.RegOneOfProd("NewLine", new[] {
-        lc.MakeSeqProd(new[] {
-          lc.MakeSeqStep("CarriageReturn"),
-          lc.MakeSeqStep("LineFeed"),
-        }),
-      }, new[] {
-        "CarriageReturn",
-        "LineFeed",
-        "NextLine",
-        "LineSeparator",
-        "ParagraphSeparator",
-      });
-
-      //new StringSymbolFactory("CarriageReturn", "\u000d").Register(lexicon);
-      //new StringSymbolFactory("LineFeed", "\u000a").Register(lexicon);
-      //new StringSymbolFactory("NextLine", "\u2085").Register(lexicon);
-      //new StringSymbolFactory("LineSeparator", "\u2028").Register(lexicon);
-      //new StringSymbolFactory("ParagraphSeparator", "\u2029").Register(lexicon);
-
-      lc.RegStringSym("CarriageReturn", "\u000d");
-      lc.RegStringSym("LineFeed", "\u000a");
-      lc.RegStringSym("NextLine", "\u2085");
-      lc.RegStringSym("LineSeparator", "\u2028");
-      lc.RegStringSym("ParagraphSeparator", "\u2029");
-
-      //new ProducerOneOf("Comment", delegate (ProducerOneOf self, LexiconBase lex) {
-      //  self.AddChoice(lex["SingleLineComment"]);
-      //  self.AddChoice(lex["DelimitedComment"]);
-      //}).Register(lexicon);
-
-      lc.RegOneOfProd("Comment", new[] {
-        "SingleLineComment",
-        //"DelimitedComment",
-      });
-
-      //new Producer("SingleLineComment", delegate (Producer self, LexiconBase lex) {
-      //  self.AddItem(new StringSymbolFactory("//"));
-      //  self.AddItem(lex["InputCharacters"], true);
-      //}).Register(lexicon);
-
-      lc.RegSeqProd("SingleLineComment", new[] {
-        lc.MakeStringSym("//").ToSeqStep(),
-        lc.MakeSeqStep("InputCharacters", true),
-      });
-
-      //new ProducerOneOf("InputCharacters", delegate (ProducerOneOf self, LexiconBase lex) {
-      //  self.AddChoice(lex["InputCharacter"]);
-      //  self.AddChoice(lex["InputCharacters"], lex["InputCharacter"]);
-      //}).Register(lexicon);
-
-      lc.RegOneOrMoreProd("InputCharacters", "InputCharacter");
-
-      //new StringSymbolFactory("InputCharacter", "a").Register(lexicon); //TODO: Add a 'not' symbol
-
-      lc.RegStringSym("InputCharacter", "a"); //TODO: Add a 'not' step
-
-      //new ProducerOneOf("NewLineCharacter", delegate (ProducerOneOf self, LexiconBase lex) {
-      //  self.AddChoice(lex["CarriageReturn"]);
-      //  self.AddChoice(lex["LineFeed"]);
-      //  self.AddChoice(lex["NextLine"]);
-      //  self.AddChoice(lex["LineSeparator"]);
-      //  self.AddChoice(lex["ParagraphSeparator"]);
-      //}).Register(lexicon);
-
-      lc.RegOneOfProd("NewLineCharacter", new[] {
-        "CarriageReturn",
-        "LineFeed",
-        "NextLine",
-        "LineSeparator",
-        "ParagraphSeparator",
-      });
-
-      //lexicon.InitFactories();
-
-      using (var stream = new MemoryStream())
-      using (var writer = new StreamWriter(stream)) {
-        LexerOld lex = new LexerOld(lc, "Input", stream);
-
-        Console.Write("Enter text to stream: ");
-
-        writer.Write(Console.ReadLine());
-        writer.Flush();
-
-        stream.Position = 0;
-
-        SymbolOld[] symbols = lex.Lex();
-
-        Console.WriteLine($"Symbols ({symbols.Length}): {string.Join<SymbolOld>(", ", symbols)}");
-
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadKey();
-      }
+      goto start;
     }
   }
 }

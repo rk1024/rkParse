@@ -1,32 +1,52 @@
 ﻿using rkParse.Core;
+using rkParse.Core.Symbols;
+using rkParse.IO;
+using rkParse.Lexical.Symbols;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using rkParse.Core.Symbols;
-using rkParse.IO;
-using System.IO;
 
 namespace rkParse.Lexical {
-  public class Lexer : Producer<string, LexerContext> {
+  public class Lexer : Producer<Stream, LexerContext> {
     BufferedStreamReader reader;
 
-    public Lexer(Stream stream) { reader = new BufferedStreamReader(stream); }
+    public Lexer() { }
 
     protected override LexerContext MakeContext() {
       return new LexerContext(this, reader);
     }
 
-    public override Symbol[] Read(string input) {
+    public override Symbol[] Read(Stream input) {
+      List<Symbol> ret;
+
+      reader = new BufferedStreamReader(input);
+
       BeginRead();
 
       Context.Execute(Steps.RootStep);
 
-      Symbol[] ret = Context.Output;
+      ret = Context.Output;
+
+
+      if (reader.Buffer() > 0) {
+        StringBuilder sb = new StringBuilder();
+        string seg;
+
+        while (reader.Read(out seg, 512) > 0) {
+          sb.Append(seg);
+        }
+
+        ret.Add(new StringOverflowSymbol(sb.ToString()));
+      }
 
       EndRead();
-      return ret;
+
+      reader = null;
+
+      return ret.ToArray();
     }
   }
 }
