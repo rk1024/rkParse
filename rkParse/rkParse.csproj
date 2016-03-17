@@ -52,6 +52,7 @@
     <Compile Include="Core\Steps\RecursiveProducerStep.cs" />
     <Compile Include="Core\Steps\ProducerStep.cs" />
     <Compile Include="Core\Symbols\OverflowSymbol.cs" />
+    <Compile Include="Core\Symbols\Production.cs" />
     <Compile Include="Core\Symbols\Symbol.cs" />
     <Compile Include="IO\BufferedReader.cs" />
     <Compile Include="IO\BufferedStreamReader.cs" />
@@ -62,8 +63,6 @@
     <Compile Include="Lexical\Steps\LexerStringStep.cs" />
     <Compile Include="Lexical\StringLexingContext.cs" />
     <Compile Include="Lexical\Symbols\StringOverflowSymbol.cs" />
-    <Compile Include="Lexical\Symbols\SymbolOld.cs" />
-    <Compile Include="Lexical\Symbols\Production.cs" />
     <Compile Include="Lexical\Symbols\StringSymbol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\StringExtensions.cs" />

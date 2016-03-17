@@ -10,9 +10,11 @@ namespace rkParse.Core.Symbols {
       this.name = name;
     }
 
-    protected string ToString(string content) {
-      return name == null ? $"<{content}>" : $"{name}({content})";
+    protected string ToString(string content, string open, string close) {
+      return name == null ? $"{open}{content}{close}" : $"{name}({content})";
     }
+
+    protected string ToString(string content) => ToString(content, "<", ">");
 
     public override string ToString() {
       return ToString("");
