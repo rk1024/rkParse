@@ -61,16 +61,16 @@ namespace rkParse.Core {
       return cache;
     }
 
-    public void EndStaging(StagingCacheBase cache, bool applyChanges) {
+    public void EndStaging(StagingCacheBase cache, bool consume, bool addSymbols) {
       if (IsCacheLocked(cache)) throw new InvalidOperationException("EndStaging called on invalid cache.");
 
       caches.Pop();
 
-      if (applyChanges) {
-        AddSymbols(cache.Symbols);
-        Consume(cache.Consumed);
-      }
+      if (consume) Consume(cache.Consumed);
+      if (addSymbols) AddSymbols(cache.Symbols);
     }
+
+    public void EndStaging(StagingCache cache, bool applyChanges) => EndStaging(cache, applyChanges, applyChanges);
 
     public bool IsCacheLocked(StagingCacheBase cache) {
       return caches.Peek() != cache;

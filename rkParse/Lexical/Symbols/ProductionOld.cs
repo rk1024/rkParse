@@ -2,16 +2,16 @@
 using System.Linq;
 
 namespace rkParse.Lexical.Symbols {
-  public class Production : SymbolOld {
+  public class ProductionOld : SymbolOld {
     SymbolOld[] symbols;
 
     public SymbolOld[] Symbols => symbols.ToArray();
 
-    public Production(string name, IEnumerable<SymbolOld> symbols) : base(name) {
+    public ProductionOld(string name, IEnumerable<SymbolOld> symbols) : base(name) {
       this.symbols = symbols.ToArray();
     }
 
-    public Production(IEnumerable<SymbolOld> symbols) : this(null, symbols) { }
+    public ProductionOld(IEnumerable<SymbolOld> symbols) : this(null, symbols) { }
 
 
     public override string ToString() {
