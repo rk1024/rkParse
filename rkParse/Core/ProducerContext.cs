@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace rkParse.Core {
-  public abstract class ProducerContext : ICacheParent<StagingCacheBase>, ICacheParent<RecursionCache> {
+  public abstract class ProducerContext<TThis> : ICacheParent<StagingCacheBase>, ICacheParent<RecursionCache> where TThis : ProducerContext<TThis> {
 
     List<Symbol> output = new List<Symbol>();
     Stack<StagingCacheBase> caches = new Stack<StagingCacheBase>();
@@ -70,7 +70,7 @@ namespace rkParse.Core {
       if (addSymbols) AddSymbols(cache.Symbols);
     }
 
-    public void EndStaging(StagingCache cache, bool applyChanges) => EndStaging(cache, applyChanges, applyChanges);
+    public void EndStaging(StagingCacheBase cache, bool applyChanges) => EndStaging(cache, applyChanges, applyChanges);
 
     public bool IsCacheLocked(StagingCacheBase cache) {
       return caches.Peek() != cache;
@@ -105,13 +105,9 @@ namespace rkParse.Core {
 
       recurCaches.Peek().PopRecursion();
     }
-  }
 
-  public abstract class ProducerContext<TThis> : ProducerContext where TThis : ProducerContext {
     public bool Execute(ProducerStep<TThis> step) {
       return step.Execute(this as TThis);
     }
-
-    public ProducerContext(Producer prod) : base(prod) { }
   }
 }

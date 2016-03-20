@@ -20,18 +20,16 @@ namespace rkParse.Lexical {
     }
 
     public override Symbol[] Read(Stream input) {
-      List<Symbol> ret;
-
       reader = new BufferedStreamReader(input);
 
       BeginRead();
 
       Context.Execute(Steps.RootStep);
 
-      ret = Context.Output;
+      List<Symbol> ret = Context.Output;
 
 
-      if (reader.Buffer() > 0) {
+      if (!reader.EndOfStream) {
         StringBuilder sb = new StringBuilder();
         string seg;
 

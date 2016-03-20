@@ -18,7 +18,7 @@ namespace rkParse.Lexical.Steps {
 
     public LexerStringStep(string pattern) : this(null, pattern) { }
 
-    public override bool Execute(LexerContext ctx) {
+    protected override bool ExecuteInternal(LexerContext ctx) {
       bool match = ctx.QueryString(pattern);
 
       if (match) {

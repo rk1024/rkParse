@@ -9,6 +9,8 @@ namespace rkParse.IO {
 
     public Stream BaseStream => reader.BaseStream;
 
+    public bool EndOfStream => buffer.Length == 0 && reader.EndOfStream;
+
     public BufferedStreamReader(Stream stream) {
       reader = new StreamReader(stream);
       buffer = new StringBuilder();
@@ -19,6 +21,8 @@ namespace rkParse.IO {
     }
 
     public int Buffer(int count) {
+      if (EndOfStream) return 0;
+
       if (count == 1) return Buffer();
 
       if (buffer.Length < count) {
@@ -35,6 +39,8 @@ namespace rkParse.IO {
     }
 
     public int Buffer() {
+      if (EndOfStream) return 0;
+
       if (buffer.Length == 0) {
         char ch = (char)reader.Read();
 

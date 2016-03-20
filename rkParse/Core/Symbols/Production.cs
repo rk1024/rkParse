@@ -15,7 +15,7 @@ namespace rkParse.Core.Symbols {
     public Production(IEnumerable<Symbol> children) : this(null, children) { }
 
     public override string ToString() {
-      return ToString(string.Join<Symbol>(", ", children), "{", "}");
+      return ToString(string.Join<Symbol>(", ", children), "{ ", " }");
     }
   }
 }

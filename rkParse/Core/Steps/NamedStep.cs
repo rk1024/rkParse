@@ -9,6 +9,8 @@ namespace rkParse.Core.Steps {
     Lexicon<TContext> steps;
     string refName;
 
+    public override bool CanBeTerminal => Step.CanBeTerminal;
+
     public string ReferenceName => refName;
     public ProducerStep<TContext> Step => steps[refName];
 
@@ -19,9 +21,7 @@ namespace rkParse.Core.Steps {
 
     public NamedStep(Lexicon<TContext> lexicon, string refName) : this(null, lexicon, refName) { }
 
-    public override bool CanBeTerminal => Step.CanBeTerminal;
-
-    public override bool Execute(TContext ctx) {
+    protected override bool ExecuteInternal(TContext ctx) {
       return ctx.Execute(Step);
     }
   }

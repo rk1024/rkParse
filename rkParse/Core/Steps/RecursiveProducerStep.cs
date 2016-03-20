@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Core.Steps {
-  public abstract class RecursiveStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext {
+  public abstract class RecursiveStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext<TContext> {
     public override bool CanBeTerminal => false;
 
     public RecursiveStep(string name = null) : base(name) {
@@ -41,7 +41,7 @@ namespace rkParse.Core.Steps {
       return false;
     }
 
-    public override bool Execute(TContext ctx) {
+    protected override bool ExecuteInternal(TContext ctx) {
       int lim = 0;
 
       BranchedStagingCache cache = ctx.BeginStagingBranched();

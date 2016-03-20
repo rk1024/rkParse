@@ -49,26 +49,26 @@ namespace rkParse.Core.Staging {
       CurrentBranch.Consume(count);
     }
 
-    public StagingCache BeginSingleBranch() {
+    public StagingCache BeginSingleBranch(bool makeCurrent = true) {
       AssertUnlocked();
 
       StagingCache cache = new StagingCache(this, Start);
 
       branches.Add(cache);
 
-      CurrentBranch = cache;
+      if (makeCurrent) CurrentBranch = cache;
 
       return cache;
     }
 
-    public BranchedStagingCache BeginSubBranch() {
+    public BranchedStagingCache BeginSubBranch(bool makeCurrent = true) {
       AssertUnlocked();
 
       BranchedStagingCache cache = new BranchedStagingCache(this, Start);
 
       branches.Add(cache);
 
-      CurrentBranch = cache;
+      if (makeCurrent) CurrentBranch = cache;
 
       return cache;
     }
@@ -85,8 +85,10 @@ namespace rkParse.Core.Staging {
       AssertUnlocked();
       AssertHasBranch();
 
+      bool isCurrent = CurrentBranch == branch;
+
       branches.Remove(branch);
-      CurrentBranch = branches.Count == 0 ? null : branches[branches.Count - 1];
+      if (isCurrent) CurrentBranch = branches.Count == 0 ? null : branches[branches.Count - 1];
     }
 
     public bool IsCacheLocked(StagingCacheBase cache) {

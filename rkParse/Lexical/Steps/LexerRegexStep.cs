@@ -20,7 +20,7 @@ namespace rkParse.Lexical.Steps {
 
     public LexerRegexStep(Regex expr, int count = 1) : this(null, expr, count) { }
 
-    public override bool Execute(LexerContext ctx) {
+    protected override bool ExecuteInternal(LexerContext ctx) {
       string text;
       bool match = ctx.QueryRegex(out text, expr, count);
 

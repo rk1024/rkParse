@@ -1,17 +1,18 @@
 ﻿using rkParse.Core.Steps;
+using rkParse.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace rkParse.Core {
-  public class Lexicon<TContext> where TContext : ProducerContext {
+  public class Lexicon<TContext> where TContext : ProducerContext<TContext> {
     Dictionary<string, ProducerStep<TContext>> steps = new Dictionary<string, ProducerStep<TContext>>();
     string rootStepName;
 
     public string RootStepName {
       get { return rootStepName; }
       set {
-        if (!steps.ContainsKey(value)) throw new KeyNotFoundException("Specified step name does not exist in Lexicon's dictionary.");
+        if (!steps.ContainsKey(value)) throw new KeyNotFoundException($"Step name {value.ToLiteral()} does not exist in Lexicon's dictionary.");
 
         rootStepName = value;
       }
@@ -40,5 +41,7 @@ namespace rkParse.Core {
       steps.Add(step.Name, step);
       return this;
     }
+
+    public NamedStep<TContext> NamedStep(string name) => new NamedStep<TContext>(this, name);
   }
 }

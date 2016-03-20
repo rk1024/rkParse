@@ -7,6 +7,7 @@ using rkParse.Core;
 using rkParse.Core.Symbols;
 using rkParse.Lexical.Steps;
 using rkParse.Util;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -16,18 +17,29 @@ namespace rkParseTest {
       start:
       Lexer lexer = new Lexer();
 
-      lexer.Steps.Add(new LexerStringStep("Test", "foo"));
+      lexer.Steps.Add(new OneOfStep<LexerContext>("Article")
+          .Add(new LexerStringStep("The"))
+          .Add(new LexerStringStep("Th"))
+          .Add(new LexerStringStep("A")))
 
-      lexer.Steps.Add(new LexerRegexStep("TestRegex", new Regex(@"[A-Za-z]")));
+        .Add(new LexerRegexStep("TestRegex", new Regex(@"[A-Za-z]")))
+        .Add(new OneOrMoreStep<LexerContext>("TestRegexes", lexer.Steps.NamedStep("TestRegex")))
 
-      lexer.Steps.RootStepName = "TestRegex";
+        .Add(new LexerRegexStep("SpaceCharacter", new Regex(@"\s")))
+        .Add(new OneOrMoreStep<LexerContext>("SpaceCharacters", lexer.Steps.NamedStep("SpaceCharacter")))
+
+        .Add(new SequenceStep<LexerContext>("QualifiedWord")
+          .Add(lexer.Steps.NamedStep("Article"))
+          .Add(lexer.Steps.NamedStep("SpaceCharacters"))
+          .Add(lexer.Steps.NamedStep("TestRegexes")))
+
+        .RootStepName = "QualifiedWord";
 
       Console.Write("> ");
 
       string line = Console.ReadLine();
 
       Console.WriteLine($"Input: {line.ToLiteral()}");
-
 
       Symbol[] symbols;
 

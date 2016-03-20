@@ -1,5 +1,5 @@
 ﻿using rkParse.Core.Staging;
-using rkParse.Lexical.Symbols;
+using rkParse.Core.Symbols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,16 +7,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Core.Steps {
-  public class OneOrMoreStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext {
+  public class OneOrMoreStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext<TContext> {
     ProducerStep<TContext> child;
 
     public override bool CanBeTerminal => false;
 
-    public OneOrMoreStep(ProducerStep<TContext> child) {
+    public OneOrMoreStep(string name, ProducerStep<TContext> child) : base(name) {
       this.child = child;
     }
 
-    public override bool Execute(TContext ctx) {
+    public OneOrMoreStep(ProducerStep<TContext> child) : this(null, child) { }
+
+    protected override bool ExecuteInternal(TContext ctx) {
       StagingCache cache = ctx.BeginStaging();
 
       bool match = false;
@@ -25,7 +27,7 @@ namespace rkParse.Core.Steps {
 
       ctx.EndStaging(cache, true, false);
 
-      ctx.AddSymbol(new ProductionOld);
+      if (match) ctx.AddSymbol(new Production(Name, cache.Symbols));
 
       return match;
     }

@@ -19,22 +19,21 @@ namespace rkParse.Lexical {
       return reader.Flush(count);
     }
 
-    public bool QueryString(string match) {
+    public bool QueryStringAhead(string match, int start = 0) {
       string peek;
-      return reader.Peek(out peek, match.Length) == match.Length && peek == match;
+      return reader.PeekAhead(out peek, Position + start, match.Length) == match.Length && peek == match;
     }
 
-    public bool QueryStringAhead(string match, int start) {
-      string peek;
-      return reader.PeekAhead(out peek, start, match.Length) == match.Length && peek == match;
+    public bool QueryString(string match) => QueryStringAhead(match, 0);
+
+    public bool QueryCharAhead(char match, int start = 0) {
+      return QueryStringAhead(match.ToString(), start);
     }
 
-    public bool QueryChar(char match) {
-      return QueryString(match.ToString());
-    }
+    public bool QueryChar(char match) => QueryCharAhead(match, 0);
 
-    public bool QueryRegex(out string peek, Regex pattern, int count = 1) {
-      reader.Peek(out peek, count);
+    public bool QueryRegexAhead(out string peek, Regex pattern, int start, int count = 1) {
+      reader.PeekAhead(out peek, Position + start, count);
 
       bool match = pattern.IsMatch(peek);
       if (!match) peek = null;
@@ -42,10 +41,6 @@ namespace rkParse.Lexical {
       return match;
     }
 
-    public bool QueryRegexAhead(Regex pattern, int start, int count = 1) {
-      string peek;
-      reader.PeekAhead(out peek, start, count);
-      return pattern.IsMatch(peek);
-    }
+    public bool QueryRegex(out string peek, Regex pattern, int count = 1) => QueryRegexAhead(out peek, pattern, 0, count);
   }
 }
