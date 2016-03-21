@@ -6,7 +6,7 @@ namespace rkParse.Core.Steps {
     bool initialized = false;
     string name;
 
-    public abstract bool CanBeTerminal { get; }
+    public abstract bool IsRecursionSafe { get; }
 
     public string Name => name;
 

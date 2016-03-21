@@ -23,7 +23,7 @@ namespace rkParse.Core.Steps {
   public class SequenceStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext<TContext> {
     List<SequenceStepItem<TContext>> items;
 
-    public override bool CanBeTerminal => items.All(item => item.Step.CanBeTerminal);
+    public override bool IsRecursionSafe => items.All(item => item.Step.IsRecursionSafe);
 
     public SequenceStep(string name, IEnumerable<SequenceStepItem<TContext>> items) : base(name) {
       this.items = items.ToList();

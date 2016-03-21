@@ -7,10 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Core.Steps {
-  public class OneOfStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext<TContext> {
+  public class OneOfStep<TContext> : NonterminalStep<TContext> where TContext : ProducerContext<TContext> {
     List<ProducerStep<TContext>> choices;
 
-    public override bool CanBeTerminal => false;
+    protected override IEnumerable<ProducerStep<TContext>> SubSteps => choices;
 
     public OneOfStep(string name, IEnumerable<ProducerStep<TContext>> choices) : base(name) {
       this.choices = choices.ToList();

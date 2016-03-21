@@ -11,7 +11,7 @@ namespace rkParse.Lexical.Steps {
     Regex expr;
     int count;
 
-    public override bool CanBeTerminal => true;
+    public override bool IsRecursionSafe => true;
 
     public LexerRegexStep(string name, Regex expr, int count = 1) : base(name) {
       this.expr = expr;

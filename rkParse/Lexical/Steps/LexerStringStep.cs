@@ -10,7 +10,7 @@ namespace rkParse.Lexical.Steps {
   public class LexerStringStep : LexerStep {
     string pattern;
 
-    public override bool CanBeTerminal => true;
+    public override bool IsRecursionSafe => true;
 
     public LexerStringStep(string name, string pattern) : base(name) {
       this.pattern = pattern;

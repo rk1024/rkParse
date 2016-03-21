@@ -10,7 +10,7 @@ namespace rkParse.Core.Steps {
   public class OneOrMoreStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext<TContext> {
     ProducerStep<TContext> child;
 
-    public override bool CanBeTerminal => false;
+    public override bool IsRecursionSafe => false;
 
     public OneOrMoreStep(string name, ProducerStep<TContext> child) : base(name) {
       this.child = child;

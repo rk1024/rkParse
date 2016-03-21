@@ -49,11 +49,13 @@
     <Compile Include="Core\Staging\StagingCache.cs" />
     <Compile Include="Core\Staging\StagingCacheBase.cs" />
     <Compile Include="Core\Steps\NamedStep.cs" />
+    <Compile Include="Core\Steps\NonterminalStep.cs" />
     <Compile Include="Core\Steps\OneOfStep.cs" />
     <Compile Include="Core\Steps\OneOrMoreStep.cs" />
     <Compile Include="Core\Steps\RecursiveProducerStep.cs" />
     <Compile Include="Core\Steps\ProducerStep.cs" />
     <Compile Include="Core\Steps\SequenceStep.cs" />
+    <Compile Include="Core\Steps\TerminalStep.cs" />
     <Compile Include="Core\Symbols\OverflowSymbol.cs" />
     <Compile Include="Core\Symbols\Production.cs" />
     <Compile Include="Core\Symbols\Symbol.cs" />

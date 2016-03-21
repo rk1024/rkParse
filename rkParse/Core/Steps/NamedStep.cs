@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Core.Steps {
-  public class NamedStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext<TContext> {
+  public class NamedStep<TContext> : NonterminalStep<TContext> where TContext : ProducerContext<TContext> {
     Lexicon<TContext> steps;
     string refName;
 
-    public override bool CanBeTerminal => Step.CanBeTerminal;
+    protected override IEnumerable<ProducerStep<TContext>> SubSteps => new[] { steps[refName] };
 
     public string ReferenceName => refName;
     public ProducerStep<TContext> Step => steps[refName];
