@@ -1,4 +1,5 @@
-﻿using rkParse.Core.Symbols;
+﻿using rkParse.Core.Steps;
+using rkParse.Core.Symbols;
 using rkParse.Lexical.Symbols;
 using System;
 using System.Collections.Generic;
@@ -7,10 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Lexical.Steps {
-  public class LexerStringStep : LexerStep {
+  public class LexerStringStep : TerminalStep<LexerContext> {
     string pattern;
-
-    public override bool IsRecursionSafe => true;
 
     public LexerStringStep(string name, string pattern) : base(name) {
       this.pattern = pattern;

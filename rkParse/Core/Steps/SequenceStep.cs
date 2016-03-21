@@ -20,10 +20,11 @@ namespace rkParse.Core.Steps {
     }
   }
 
-  public class SequenceStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext<TContext> {
+  public class SequenceStep<TContext> : NonterminalStep<TContext> where TContext : ProducerContext<TContext> {
     List<SequenceStepItem<TContext>> items;
 
-    public override bool IsRecursionSafe => items.All(item => item.Step.IsRecursionSafe);
+    protected override IEnumerable<ProducerStep<TContext>> SubSteps => from item in items
+                                                                       select item.Step;
 
     public SequenceStep(string name, IEnumerable<SequenceStepItem<TContext>> items) : base(name) {
       this.items = items.ToList();

@@ -52,7 +52,6 @@
     <Compile Include="Core\Steps\NonterminalStep.cs" />
     <Compile Include="Core\Steps\OneOfStep.cs" />
     <Compile Include="Core\Steps\OneOrMoreStep.cs" />
-    <Compile Include="Core\Steps\RecursiveProducerStep.cs" />
     <Compile Include="Core\Steps\ProducerStep.cs" />
     <Compile Include="Core\Steps\SequenceStep.cs" />
     <Compile Include="Core\Steps\TerminalStep.cs" />
@@ -64,7 +63,6 @@
     <Compile Include="Lexical\Lexer.cs" />
     <Compile Include="Lexical\LexerContext.cs" />
     <Compile Include="Lexical\Steps\LexerRegexStep.cs" />
-    <Compile Include="Lexical\Steps\LexerStep.cs" />
     <Compile Include="Lexical\Steps\LexerStringStep.cs" />
     <Compile Include="Lexical\Symbols\StringOverflowSymbol.cs" />
     <Compile Include="Lexical\Symbols\StringSymbol.cs" />

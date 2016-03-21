@@ -1,4 +1,5 @@
-﻿using rkParse.Lexical.Symbols;
+﻿using rkParse.Core.Steps;
+using rkParse.Lexical.Symbols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace rkParse.Lexical.Steps {
-  public class LexerRegexStep : LexerStep {
+  public class LexerRegexStep : TerminalStep<LexerContext> {
     Regex expr;
     int count;
-
-    public override bool IsRecursionSafe => true;
 
     public LexerRegexStep(string name, Regex expr, int count = 1) : base(name) {
       this.expr = expr;

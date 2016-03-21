@@ -7,10 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Core.Steps {
-  public class OneOrMoreStep<TContext> : ProducerStep<TContext> where TContext : ProducerContext<TContext> {
+  public class OneOrMoreStep<TContext> : NonterminalStep<TContext> where TContext : ProducerContext<TContext> {
     ProducerStep<TContext> child;
 
-    public override bool IsRecursionSafe => false;
+    protected override IEnumerable<ProducerStep<TContext>> SubSteps => new[] { child };
 
     public OneOrMoreStep(string name, ProducerStep<TContext> child) : base(name) {
       this.child = child;
