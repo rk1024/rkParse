@@ -16,6 +16,15 @@ namespace rkParse.Core {
 
     public List<Symbol> Output => output.ToList();
 
+    public bool SafeRecursing => recurLimit > 0;
+    public bool CanRecurse {
+      get {
+        if (!SafeRecursing) throw new InvalidOperationException("Cannot access CanRecurse while not safe-recursing.");
+
+        return recurDepth < recurLimit;
+      }
+    }
+
     protected int Position => caches.Peek().End;
 
     public ProducerContext(Producer prod) {
@@ -80,30 +89,44 @@ namespace rkParse.Core {
       return recurCaches.Peek() != cache;
     }
 
-    public RecursionCache BeginRecursion(int limit) {
-      RecursionCache cache = new RecursionCache(this, limit);
+    public bool BeginSafeRecursion(int limit = 0) {
+      if (SafeRecursing) return false;
 
-      recurCaches.Push(cache);
+      if (limit < 0) throw new ArgumentOutOfRangeException("limit", limit, "limit must be greater than or equal to zero.");
+      recurLimit = limit;
+      recurDepth = 0;
 
-      return cache;
+      return true;
     }
 
-    public void EndRecursion(RecursionCache cache) {
-      if (cache != recurCaches.Peek()) throw new InvalidOperationException("EndRecursion called on invalid cache.");
+    public bool EndSafeRecursion(RecursionCache cache) {
+      if (!SafeRecursing) return false;
 
-      recurCaches.Pop();
+      if (recurDepth > 0) throw new InvalidOperationException("Cannot stop safe-recursion before all recursions have completed.");
+
+      recurLimit = recurDepth = -1;
+
+      return true;
     }
 
     public bool PushRecursion() {
-      if (recurCaches.Count == 0) throw new InvalidOperationException("Cannot call PushRecursion before BeginRecursion.");
+      if (!SafeRecursing) throw new InvalidOperationException("Cannot push recursion when not safe-recursing.");
 
-      return recurCaches.Peek().PushRecursion();
+      if (recurDepth == recurLimit) throw new InvalidOperationException("Attempted to exceed recursion limit.");
+
+      if (++recurDepth == recurLimit) return false;
+
+      return true;
     }
 
-    public void PopRecursion() {
-      if (recurCaches.Count == 0) throw new InvalidOperationException("Cannot call PopRecursion before BeginRecursion.");
+    public bool PopRecursion() {
+      if (!SafeRecursing) throw new InvalidOperationException("Cannot pop recursion when not safe-recursing.");
 
-      recurCaches.Peek().PopRecursion();
+      if (recurDepth == 0) throw new InvalidOperationException("Attempted to pop nonexistent recursion.");
+
+      if (--recurDepth == 0) return false;
+
+      return true;
     }
 
     public bool Execute(ProducerStep<TThis> step) {

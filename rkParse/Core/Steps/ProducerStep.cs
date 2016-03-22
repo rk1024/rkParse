@@ -24,6 +24,11 @@ namespace rkParse.Core.Steps {
     public bool Execute(TContext ctx) {
       if (!initialized) { Initialize(ctx); initialized = true; }
 
+      if (!IsRecursionSafe) {
+        ctx.BeginSafeRecursion();
+
+      }
+
       return ExecuteInternal(ctx);
     }
   }
