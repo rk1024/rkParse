@@ -45,7 +45,6 @@
     <Compile Include="Core\ProducerContext.cs" />
     <Compile Include="Core\Staging\BranchedStagingCache.cs" />
     <Compile Include="Core\Staging\ICacheParent.cs" />
-    <Compile Include="Core\Staging\RecursionCache.cs" />
     <Compile Include="Core\Staging\StagingCache.cs" />
     <Compile Include="Core\Staging\StagingCacheBase.cs" />
     <Compile Include="Core\Steps\NamedStep.cs" />

@@ -1,5 +1,6 @@
 ﻿using rkParse.Core;
 using rkParse.IO;
+using rkParse.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,14 +20,14 @@ namespace rkParse.Lexical {
       return reader.Flush(count);
     }
 
-    public bool QueryStringAhead(string match, int start = 0) {
+    public bool QueryStringAhead(string match, int start) {
       string peek;
       return reader.PeekAhead(out peek, Position + start, match.Length) == match.Length && peek == match;
     }
 
     public bool QueryString(string match) => QueryStringAhead(match, 0);
 
-    public bool QueryCharAhead(char match, int start = 0) {
+    public bool QueryCharAhead(char match, int start) {
       return QueryStringAhead(match.ToString(), start);
     }
 
@@ -34,6 +35,8 @@ namespace rkParse.Lexical {
 
     public bool QueryRegexAhead(out string peek, Regex pattern, int start, int count = 1) {
       reader.PeekAhead(out peek, Position + start, count);
+
+      Console.WriteLine($"[ProducerContext] Matching regex against string {peek.ToLiteral()}...");
 
       bool match = pattern.IsMatch(peek);
       if (!match) peek = null;

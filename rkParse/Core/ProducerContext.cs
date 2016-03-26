@@ -6,17 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace rkParse.Core {
-  public abstract class ProducerContext<TThis> : ICacheParent<StagingCacheBase>, ICacheParent<RecursionCache> where TThis : ProducerContext<TThis> {
+  public abstract class ProducerContext<TThis> : ICacheParent<StagingCacheBase> where TThis : ProducerContext<TThis> {
 
     List<Symbol> output = new List<Symbol>();
     Stack<StagingCacheBase> caches = new Stack<StagingCacheBase>();
-    Stack<RecursionCache> recurCaches = new Stack<RecursionCache>();
     Producer prod;
-    int recurDepth = 0, recurLimit = 0;
+    int recurDepth = -1, recurLimit = -1;
 
     public List<Symbol> Output => output.ToList();
 
-    public bool SafeRecursing => recurLimit > 0;
+    public bool SafeRecursing => recurLimit >= 0;
     public bool CanRecurse {
       get {
         if (!SafeRecursing) throw new InvalidOperationException("Cannot access CanRecurse while not safe-recursing.");
@@ -25,7 +24,16 @@ namespace rkParse.Core {
       }
     }
 
-    protected int Position => caches.Peek().End;
+    public int RecursionLimit {
+      get { return recurLimit; }
+      set {
+        if (value < 0) throw new ArgumentOutOfRangeException("value", value, "Recursion limit must be greater than or equal to zero.");
+
+        recurLimit = value;
+      }
+    }
+
+    protected int Position => caches.Count == 0 ? 0 : caches.Peek().End;
 
     public ProducerContext(Producer prod) {
       if (!prod.IsReading) throw new InvalidOperationException($"Can't make a LexingContext for a Producer that is not reading.");
@@ -48,6 +56,8 @@ namespace rkParse.Core {
     public void Consume(int count) {
       if (caches.Count == 0) ConsumeInternal(count);
       else caches.Peek().Consume(count);
+
+      Console.WriteLine($"[ProducerContext] Consumed {count} character(s); position is {Position}.");
     }
 
     public StagingCache BeginStaging() {
@@ -56,6 +66,8 @@ namespace rkParse.Core {
       else cache = new StagingCache(this, caches.Peek().End);
 
       caches.Push(cache);
+
+      Console.WriteLine($"[ProducerContext] Pushed staging cache; stack now contains {caches.Count} cache(s).");
 
       return cache;
     }
@@ -67,6 +79,8 @@ namespace rkParse.Core {
 
       caches.Push(cache);
 
+      Console.WriteLine($"[ProducerContext] Pushed branched staging cache; stack now contains {caches.Count} cache(s).");
+
       return cache;
     }
 
@@ -77,6 +91,8 @@ namespace rkParse.Core {
 
       if (consume) Consume(cache.Consumed);
       if (addSymbols) AddSymbols(cache.Symbols);
+
+      Console.WriteLine($"[ProducerContext] Popped staging cache; stack now contains {caches.Count} cache(s).");
     }
 
     public void EndStaging(StagingCacheBase cache, bool applyChanges) => EndStaging(cache, applyChanges, applyChanges);
@@ -85,26 +101,25 @@ namespace rkParse.Core {
       return caches.Peek() != cache;
     }
 
-    public bool IsCacheLocked(RecursionCache cache) {
-      return recurCaches.Peek() != cache;
-    }
-
     public bool BeginSafeRecursion(int limit = 0) {
       if (SafeRecursing) return false;
 
-      if (limit < 0) throw new ArgumentOutOfRangeException("limit", limit, "limit must be greater than or equal to zero.");
-      recurLimit = limit;
+      RecursionLimit = limit;
       recurDepth = 0;
+
+      Console.WriteLine($"[ProducerContext] Beginning safe recursion with limit {limit}...");
 
       return true;
     }
 
-    public bool EndSafeRecursion(RecursionCache cache) {
-      if (!SafeRecursing) return false;
+    public bool EndSafeRecursion() {
+      if (!SafeRecursing) throw new InvalidOperationException("Context is not safe-recursing.");
 
       if (recurDepth > 0) throw new InvalidOperationException("Cannot stop safe-recursion before all recursions have completed.");
 
       recurLimit = recurDepth = -1;
+
+      Console.WriteLine($"[ProducerContext] Safe recursion ended.");
 
       return true;
     }
@@ -114,7 +129,9 @@ namespace rkParse.Core {
 
       if (recurDepth == recurLimit) throw new InvalidOperationException("Attempted to exceed recursion limit.");
 
-      if (++recurDepth == recurLimit) return false;
+      if (++recurDepth == recurLimit) { Console.WriteLine($"[ProducerContext] Recursion limit {recurLimit} hit."); return false; }
+
+      Console.WriteLine($"[ProducerContext] Recursion pushed; depth is now {recurDepth}.");
 
       return true;
     }
@@ -129,7 +146,7 @@ namespace rkParse.Core {
       return true;
     }
 
-    public bool Execute(ProducerStep<TThis> step) {
+    public StepResult Execute(ProducerStep<TThis> step) {
       return step.Execute(this as TThis);
     }
   }

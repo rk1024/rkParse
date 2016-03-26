@@ -9,19 +9,19 @@ namespace rkParse.Core.Steps {
     Lexicon<TContext> steps;
     string refName;
 
-    protected override IEnumerable<ProducerStep<TContext>> SubSteps => new[] { steps[refName] };
+    protected override IEnumerable<ProducerStep<TContext>> SubSteps {
+      get { yield return Step; }
+    }
 
-    public string ReferenceName => refName;
     public ProducerStep<TContext> Step => steps[refName];
+    public string ReferenceName => refName;
 
-    public NamedStep(string name, Lexicon<TContext> lexicon, string refName) : base(name) {
+    public NamedStep(Lexicon<TContext> lexicon, string refName) : base(refName) {
       steps = lexicon;
       this.refName = refName;
     }
 
-    public NamedStep(Lexicon<TContext> lexicon, string refName) : this(null, lexicon, refName) { }
-
-    protected override bool ExecuteInternal(TContext ctx) {
+    protected override StepResult ExecuteInternal(TContext ctx) {
       return ctx.Execute(Step);
     }
   }

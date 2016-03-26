@@ -28,14 +28,20 @@ namespace rkParse.Core.Steps {
       return this;
     }
 
-    protected override bool ExecuteInternal(TContext ctx) {
+    protected override StepResult ExecuteInternal(TContext ctx) {
       BranchedStagingCache cache = ctx.BeginStagingBranched();
       StagingCache longest = null;
+      bool addRecursion = true;
 
       foreach (ProducerStep<TContext> choice in choices) {
-        StagingCache branch = cache.BeginSingleBranch();
+        if (ctx.SafeRecursing && ctx.CanRecurse && !choice.IsRecursive) continue;
 
-        if (choice.Execute(ctx)) {
+        StagingCache branch = cache.BeginSingleBranch();
+        StepResult result = choice.Execute(ctx);
+
+        if (result != StepResult.AddRecursion) addRecursion = false;
+
+        if (result == StepResult.Positive) {
           if (longest == null) goto keepBranch;
           else if (longest.Consumed < branch.Consumed) {
             cache.EndBranch(longest);
@@ -60,13 +66,13 @@ namespace rkParse.Core.Steps {
 
       if (longest == null) {
         ctx.EndStaging(cache, false);
-        return false;
+        return addRecursion ? StepResult.AddRecursion : StepResult.Negative;
       }
 
       ctx.EndStaging(cache, true, false);
       ctx.AddSymbol(new Production(Name, cache.Symbols));
 
-      return true;
+      return StepResult.Positive;
     }
   }
 }

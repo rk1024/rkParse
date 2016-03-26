@@ -23,7 +23,13 @@ namespace rkParseTest {
           .Add(new LexerStringStep("A")))
 
         .Add(new LexerRegexStep("TestRegex", new Regex(@"[A-Za-z]")))
-        .Add(new OneOrMoreStep<LexerContext>("TestRegexes", lexer.Steps.NamedStep("TestRegex")))
+        //.Add(new OneOrMoreStep<LexerContext>("TestRegexes", lexer.Steps.NamedStep("TestRegex")))
+
+        .Add(new OneOfStep<LexerContext>("TestRegexes")
+          .Add(new SequenceStep<LexerContext>()
+            .Add(lexer.Steps.NamedStep("TestRegexes"))
+            .Add(lexer.Steps.NamedStep("TestRegex")))
+          .Add(lexer.Steps.NamedStep("TestRegex")))
 
         .Add(new LexerRegexStep("SpaceCharacter", new Regex(@"\s")))
         .Add(new OneOrMoreStep<LexerContext>("SpaceCharacters", lexer.Steps.NamedStep("SpaceCharacter")))

@@ -10,7 +10,9 @@ namespace rkParse.Core.Steps {
   public class OneOrMoreStep<TContext> : NonterminalStep<TContext> where TContext : ProducerContext<TContext> {
     ProducerStep<TContext> child;
 
-    protected override IEnumerable<ProducerStep<TContext>> SubSteps => new[] { child };
+    protected override IEnumerable<ProducerStep<TContext>> SubSteps {
+      get { yield return child; }
+    }
 
     public OneOrMoreStep(string name, ProducerStep<TContext> child) : base(name) {
       this.child = child;
@@ -18,18 +20,22 @@ namespace rkParse.Core.Steps {
 
     public OneOrMoreStep(ProducerStep<TContext> child) : this(null, child) { }
 
-    protected override bool ExecuteInternal(TContext ctx) {
+    protected override StepResult ExecuteInternal(TContext ctx) {
       StagingCache cache = ctx.BeginStaging();
 
-      bool match = false;
+      StepResult result = child.Execute(ctx);
 
-      while (child.Execute(ctx)) match = true;
+      if (result != StepResult.Positive) {
+        ctx.EndStaging(cache, false);
+        return result;
+      }
+
+      while (child.Execute(ctx) == StepResult.Positive) ;
 
       ctx.EndStaging(cache, true, false);
+      ctx.AddSymbol(new Production(Name, cache.Symbols));
 
-      if (match) ctx.AddSymbol(new Production(Name, cache.Symbols));
-
-      return match;
+      return StepResult.Positive;
     }
   }
 }

@@ -42,14 +42,15 @@ namespace rkParse.Core.Steps {
       return this;
     }
 
-    protected override bool ExecuteInternal(TContext ctx) {
+    protected override StepResult ExecuteInternal(TContext ctx) {
       StagingCache cache = ctx.BeginStaging();
+      StepResult result;
 
       foreach (SequenceStepItem<TContext> item in items) {
-        if (!(item.Step.Execute(ctx) || item.IsOptional)) {
+        if (!((result = item.Step.Execute(ctx)) == StepResult.Positive || item.IsOptional)) {
           ctx.EndStaging(cache, false);
 
-          return false;
+          return result;
         }
       }
 
@@ -57,7 +58,7 @@ namespace rkParse.Core.Steps {
 
       ctx.AddSymbol(new Production(Name, cache.Symbols));
 
-      return true;
+      return StepResult.Positive;
     }
   }
 }
