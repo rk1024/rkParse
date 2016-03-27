@@ -26,7 +26,6 @@ namespace rkParse.Lexical.Steps {
 
       if (match) {
         Symbol sym = new StringSymbol(Name, text);
-        Console.WriteLine($"[ProducerStep]{_DebugIndent()} Matched {sym}");
 
         ctx.AddSymbol(sym);
         ctx.Consume(text.Length);

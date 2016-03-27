@@ -8,12 +8,10 @@ using System.Threading.Tasks;
 
 namespace rkParse.Lexical.Symbols {
   public class StringOverflowSymbol : OverflowSymbol<string> {
+    protected override string StringContents => Input.ToLiteral();
+
     public StringOverflowSymbol(string name, string input) : base(name, input) { }
 
     public StringOverflowSymbol(string input) : base(input) { }
-
-    public override string ToString() {
-      return ToString(Input.ToLiteral());
-    }
   }
 }

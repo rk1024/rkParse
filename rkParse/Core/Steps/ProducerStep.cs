@@ -26,75 +26,18 @@ namespace rkParse.Core.Steps {
 
     protected abstract StepResult ExecuteInternal(TContext ctx);
 
-    static int indent = 0;
-
-    protected string _DebugIndent() {
-      StringBuilder sb = new StringBuilder();
-
-      for (int i = 0; i < indent; i++)
-        sb.Append(" |");
-
-      return sb.ToString();
-    }
-
-    protected string _DebugName() {
-      return $"{GetType().Name} {(Name == null ? "(anonymous)" : Name.ToLiteral())}";
-    }
-
-    protected void _DebugPrintResult(StepResult result) {
-      switch (result) {
-        case StepResult.Negative:
-          Console.ForegroundColor = ConsoleColor.Red;
-          break;
-        case StepResult.Positive:
-          Console.ForegroundColor = ConsoleColor.Green;
-          break;
-        case StepResult.AddRecursion:
-          Console.ForegroundColor = ConsoleColor.Yellow;
-          break;
-      }
-
-      Console.Write(Enum.GetName(typeof(StepResult), result));
-      Console.ResetColor();
-    }
-
-    protected virtual void Initialize(TContext ctx) {
-      Console.WriteLine($"[ProducerStep]{_DebugIndent()} Initializing {_DebugName()}...");
-    }
+    protected virtual void Initialize(TContext ctx) { }
 
     public StepResult Execute(TContext ctx) {
       StepResult result;
 
-      Console.Write($"[ProducerStep]{_DebugIndent()} ");
-      Console.ForegroundColor = ConsoleColor.DarkGreen;
-      Console.WriteLine($"Executing {_DebugName()}...");
-      Console.ResetColor();
-
-      ++indent;
-
-      if (!initialized) {
-        Initialize(ctx);
-        initialized = true;
-
-        Console.Write($"[ProducerStep]{_DebugIndent()} ");
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"{_DebugName()} is{(IsRecursive ? "" : " not")} recursive.");
-        Console.ResetColor();
-      }
+      if (!initialized) { Initialize(ctx); initialized = true; }
 
       if (IsRecursive) {
-        if (ctx.SafeRecursing && !ctx.CanRecurse) {
-          Console.Write($"[ProducerStep]{_DebugIndent()} ");
-          Console.ForegroundColor = ConsoleColor.DarkYellow;
-          Console.WriteLine("Recursion limit hit; skipping execution.");
-          Console.ResetColor();
-
+        if (ctx.SafeRecursing && !ctx.CanRecurse)
           result = StepResult.AddRecursion;
-        }
 
         else if (ctx.BeginSafeRecursion()) {
-          Console.WriteLine($"[ProducerStep]{_DebugIndent()} Beginning safe recursion...");
-
           BranchedStagingCache cache = ctx.BeginStagingBranched();
           StagingCache last = null;
 
@@ -113,10 +56,6 @@ namespace rkParse.Core.Steps {
             }
 
             ctx.RecursionLimit++;
-
-            Console.Write($"[ProducerStep]{_DebugIndent()} Got result of ");
-            _DebugPrintResult(result);
-            Console.WriteLine($"; incremented limit to {ctx.RecursionLimit}.");
           }
 
           if (last != null) result = StepResult.Positive;
@@ -132,12 +71,6 @@ namespace rkParse.Core.Steps {
         }
       }
       else result = ExecuteInternal(ctx);
-
-      Console.Write($"[ProducerStep]{_DebugIndent()} {_DebugName()} returned ");
-      _DebugPrintResult(result);
-      Console.WriteLine(".");
-
-      --indent;
 
       return result;
     }

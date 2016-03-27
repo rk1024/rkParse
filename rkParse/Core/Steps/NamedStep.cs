@@ -16,10 +16,12 @@ namespace rkParse.Core.Steps {
     public ProducerStep<TContext> Step => steps[refName];
     public string ReferenceName => refName;
 
-    public NamedStep(Lexicon<TContext> lexicon, string refName) : base(refName) {
+    public NamedStep(string name, Lexicon<TContext> lexicon, string refName) : base(name) {
       steps = lexicon;
       this.refName = refName;
     }
+
+    public NamedStep(Lexicon<TContext> lexicon, string refName) : this(refName, lexicon, refName) { }
 
     protected override StepResult ExecuteInternal(TContext ctx) {
       return ctx.Execute(Step);

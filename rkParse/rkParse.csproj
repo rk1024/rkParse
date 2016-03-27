@@ -47,6 +47,7 @@
     <Compile Include="Core\Staging\ICacheParent.cs" />
     <Compile Include="Core\Staging\StagingCache.cs" />
     <Compile Include="Core\Staging\StagingCacheBase.cs" />
+    <Compile Include="Core\Steps\ANotBStep.cs" />
     <Compile Include="Core\Steps\NamedStep.cs" />
     <Compile Include="Core\Steps\NonterminalStep.cs" />
     <Compile Include="Core\Steps\OneOfStep.cs" />
@@ -57,7 +58,6 @@
     <Compile Include="Core\Symbols\OverflowSymbol.cs" />
     <Compile Include="Core\Symbols\Production.cs" />
     <Compile Include="Core\Symbols\Symbol.cs" />
-    <Compile Include="IO\BufferedReader.cs" />
     <Compile Include="IO\BufferedStreamReader.cs" />
     <Compile Include="Lexical\Lexer.cs" />
     <Compile Include="Lexical\LexerContext.cs" />

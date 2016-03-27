@@ -12,6 +12,8 @@ namespace rkParse.Core.Symbols {
   public class OverflowSymbol<TInput> : OverflowSymbol {
     TInput input;
 
+    protected override string StringContents => input.ToString();
+
     public TInput Input => input;
 
     public OverflowSymbol(string name, TInput input) : base(name) {
@@ -19,9 +21,5 @@ namespace rkParse.Core.Symbols {
     }
 
     public OverflowSymbol(TInput input) : this(null, input) { }
-
-    public override string ToString() {
-      return ToString(input.ToString());
-    }
   }
 }

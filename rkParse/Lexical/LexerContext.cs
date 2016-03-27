@@ -36,8 +36,6 @@ namespace rkParse.Lexical {
     public bool QueryRegexAhead(out string peek, Regex pattern, int start, int count = 1) {
       reader.PeekAhead(out peek, Position + start, count);
 
-      Console.WriteLine($"[ProducerContext] Matching regex against string {peek.ToLiteral()}...");
-
       bool match = pattern.IsMatch(peek);
       if (!match) peek = null;
 

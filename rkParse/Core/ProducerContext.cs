@@ -7,7 +7,6 @@ using System.Linq;
 
 namespace rkParse.Core {
   public abstract class ProducerContext<TThis> : ICacheParent<StagingCacheBase> where TThis : ProducerContext<TThis> {
-
     List<Symbol> output = new List<Symbol>();
     Stack<StagingCacheBase> caches = new Stack<StagingCacheBase>();
     Producer prod;
@@ -56,8 +55,6 @@ namespace rkParse.Core {
     public void Consume(int count) {
       if (caches.Count == 0) ConsumeInternal(count);
       else caches.Peek().Consume(count);
-
-      Console.WriteLine($"[ProducerContext] Consumed {count} character(s); position is {Position}.");
     }
 
     public StagingCache BeginStaging() {
@@ -66,8 +63,6 @@ namespace rkParse.Core {
       else cache = new StagingCache(this, caches.Peek().End);
 
       caches.Push(cache);
-
-      Console.WriteLine($"[ProducerContext] Pushed staging cache; stack now contains {caches.Count} cache(s).");
 
       return cache;
     }
@@ -79,8 +74,6 @@ namespace rkParse.Core {
 
       caches.Push(cache);
 
-      Console.WriteLine($"[ProducerContext] Pushed branched staging cache; stack now contains {caches.Count} cache(s).");
-
       return cache;
     }
 
@@ -91,8 +84,6 @@ namespace rkParse.Core {
 
       if (consume) Consume(cache.Consumed);
       if (addSymbols) AddSymbols(cache.Symbols);
-
-      Console.WriteLine($"[ProducerContext] Popped staging cache; stack now contains {caches.Count} cache(s).");
     }
 
     public void EndStaging(StagingCacheBase cache, bool applyChanges) => EndStaging(cache, applyChanges, applyChanges);
@@ -107,8 +98,6 @@ namespace rkParse.Core {
       RecursionLimit = limit;
       recurDepth = 0;
 
-      Console.WriteLine($"[ProducerContext] Beginning safe recursion with limit {limit}...");
-
       return true;
     }
 
@@ -119,23 +108,23 @@ namespace rkParse.Core {
 
       recurLimit = recurDepth = -1;
 
-      Console.WriteLine($"[ProducerContext] Safe recursion ended.");
-
       return true;
     }
 
+    //NB: Return value is whether you can call PushRecursion again, not whether a recursion was actually pushed.
+    //    IT WILL THROW AN EXCEPTION IF IT CANNOT PUSH
     public bool PushRecursion() {
       if (!SafeRecursing) throw new InvalidOperationException("Cannot push recursion when not safe-recursing.");
 
       if (recurDepth == recurLimit) throw new InvalidOperationException("Attempted to exceed recursion limit.");
 
-      if (++recurDepth == recurLimit) { Console.WriteLine($"[ProducerContext] Recursion limit {recurLimit} hit."); return false; }
-
-      Console.WriteLine($"[ProducerContext] Recursion pushed; depth is now {recurDepth}.");
+      if (++recurDepth == recurLimit) return false;
 
       return true;
     }
 
+    //NB: Return value is whether you can call PopRecursion again, not whether a recursion was actually popped.
+    //    IT WILL THROW AN EXCEPTION IF IT CANNOT POP
     public bool PopRecursion() {
       if (!SafeRecursing) throw new InvalidOperationException("Cannot pop recursion when not safe-recursing.");
 

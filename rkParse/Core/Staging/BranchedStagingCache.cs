@@ -58,8 +58,6 @@ namespace rkParse.Core.Staging {
 
       if (makeCurrent) CurrentBranch = cache;
 
-      Console.WriteLine($"[BranchedStagingCache] Added single branch; list now contains {branches.Count} branch(es).");
-
       return cache;
     }
 
@@ -71,8 +69,6 @@ namespace rkParse.Core.Staging {
       branches.Add(cache);
 
       if (makeCurrent) CurrentBranch = cache;
-
-      Console.WriteLine($"[BranchedStagingCache] Added sub-branch; list now contains {branches.Count} branch(es).");
 
       return cache;
     }
@@ -93,8 +89,6 @@ namespace rkParse.Core.Staging {
 
       if (!branches.Remove(branch)) throw new ArgumentOutOfRangeException("branch", branch, "branch must be a branch within this cache.");
       if (isCurrent) CurrentBranch = branches.Count == 0 ? null : branches[branches.Count - 1];
-
-      Console.WriteLine($"[BranchedStagingCache] Removed branch; list now contains {branches.Count} branch(es).");
     }
 
     public bool IsCacheLocked(StagingCacheBase cache) {
