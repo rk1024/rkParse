@@ -45,13 +45,24 @@ namespace rkParse.Core.Steps {
     protected override StepResult ExecuteInternal(TContext ctx) {
       StagingCache cache = ctx.BeginStaging();
       StepResult result;
+      bool addRecursion = false;
 
       foreach (SequenceStepItem<TContext> item in items) {
-        if (!((result = item.Step.Execute(ctx)) == StepResult.Positive || item.IsOptional)) {
-          ctx.EndStaging(cache, false);
-
-          return result;
+        result = item.Step.Execute(ctx);
+        switch (result) {
+          case StepResult.Positive: continue;
+          case StepResult.Negative:
+            if (!item.IsOptional) goto negative;
+            break;
+          case StepResult.AddRecursion:
+            addRecursion = true;
+            goto case StepResult.Negative;
         }
+
+        negative:
+        ctx.EndStaging(cache, false);
+
+        return addRecursion ? StepResult.AddRecursion : StepResult.Negative;
       }
 
       ctx.EndStaging(cache, true, false);

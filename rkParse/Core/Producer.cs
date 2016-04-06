@@ -2,43 +2,30 @@
 using System.Collections.Generic;
 
 namespace rkParse.Core {
-  public abstract class Producer {
-    bool isReading = false;
-
-    public bool IsReading => isReading;
-
-    protected virtual void BeginRead() {
-      isReading = true;
-    }
-
-    protected virtual void EndRead() {
-      isReading = false;
-    }
-  }
-
-  public abstract class Producer<TInput, TContext> : Producer where TContext : ProducerContext<TContext> {
+  public abstract class Producer<TContext> where TContext : ProducerContext<TContext> {
     Lexicon<TContext> steps = new Lexicon<TContext>();
     TContext context = null;
+    bool isReading = false;
 
     public Lexicon<TContext> Steps => steps;
     protected TContext Context => context;
+
+    public bool IsReading => isReading;
 
     public Producer() { }
 
     protected abstract TContext MakeContext();
 
-    protected override void BeginRead() {
-      base.BeginRead();
+    protected virtual void BeginRead() {
+      isReading = true;
 
       context = MakeContext();
     }
 
-    protected override void EndRead() {
+    protected virtual void EndRead() {
       context = null;
 
-      base.EndRead();
+      isReading = false;
     }
-
-    public abstract Symbol[] Read(TInput input);
   }
 }

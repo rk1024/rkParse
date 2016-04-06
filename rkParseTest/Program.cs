@@ -1,16 +1,18 @@
-﻿using rkParse.Core.Steps;
-using rkParse.Lexical;
-using rkParse.Lexical.Symbols;
-using System;
-using System.IO;
-using rkParse.Core;
+﻿using rkParse.Core;
+using rkParse.Core.Steps;
 using rkParse.Core.Symbols;
+using rkParse.Lexical;
 using rkParse.Lexical.Steps;
+using rkParse.Lexical.Symbols;
 using rkParse.Util;
+using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace rkParseTest {
   class Program {
@@ -33,7 +35,7 @@ namespace rkParseTest {
         .Add(new SequenceStep<LexerContext>()
           .Add(steps.NamedStep("InputElements"), true)
           .Add(steps.NamedStep("NewLine")))
-        .Add(steps.NamedStep("PPDirective")));
+        /*.Add(steps.NamedStep("PPDirective"))*/);
 
       steps.Add(new OneOfStep<LexerContext>("InputElements")
         .Add(new SequenceStep<LexerContext>()
@@ -44,13 +46,13 @@ namespace rkParseTest {
       steps.Add(new OneOfStep<LexerContext>("InputElement")
         .Add(steps.NamedStep("Whitespace"))
         .Add(steps.NamedStep("Comment"))
-        .Add(steps.NamedStep("Token")));
+        /*.Add(steps.NamedStep("Token"))*/);
 
       steps.Add(new OneOfStep<LexerContext>("NewLine")
         .Add(new LexerStringStep("\u000d"))
         .Add(new LexerStringStep("\u000a"))
         .Add(new LexerStringStep("\u000d\u000a"))
-        .Add(new LexerStringStep("\u2085"))
+        .Add(new LexerStringStep("\u0085"))
         .Add(new LexerStringStep("\u2028"))
         .Add(new LexerStringStep("\u2029")));
 
@@ -72,43 +74,103 @@ namespace rkParseTest {
         .Add(steps.NamedStep("SingleLineComment"))
         .Add(steps.NamedStep("DelimitedComment")));
 
-      lexer.Steps.Add(new OneOfStep<LexerContext>("Article")
-          .Add(new LexerStringStep("The"))
-          .Add(new LexerStringStep("Th"))
-          .Add(new LexerStringStep("A")))
+      steps.Add(new SequenceStep<LexerContext>("SingleLineComment")
+        .Add(new LexerStringStep("//"))
+        .Add(steps.NamedStep("InputCharacters"), true));
 
-        .Add(new LexerRegexStep("TestRegex", new Regex(@"[A-Za-z]")))
-        //.Add(new OneOrMoreStep<LexerContext>("TestRegexes", lexer.Steps.NamedStep("TestRegex")))
+      steps.Add(new OneOfStep<LexerContext>("InputCharacters")
+        .Add(steps.NamedStep("InputCharacter"))
+        .Add(new SequenceStep<LexerContext>()
+          .Add(steps.NamedStep("InputCharacters"))
+          .Add(steps.NamedStep("InputCharacter"))));
 
-        .Add(new ANotBStep<LexerContext>("NotC", lexer.Steps.NamedStep("TestRegex"), new LexerStringStep("c")))
+      steps.Add(new ANotBStep<LexerContext>("InputCharacter",
+        new LexerRegexStep(new Regex(@".", RegexOptions.Singleline)),
+        steps.NamedStep("NewLineCharacter")));
 
-        .Add(new OneOfStep<LexerContext>("TestRegexes")
-          .Add(new SequenceStep<LexerContext>()
-            .Add(lexer.Steps.NamedStep("TestRegexes"))
-            .Add(lexer.Steps.NamedStep("NotC")))
-          .Add(lexer.Steps.NamedStep("NotC")))
+      steps.Add(new OneOfStep<LexerContext>("NewLineCharacter")
+        .Add(new LexerStringStep("\u000d"))
+        .Add(new LexerStringStep("\u000a"))
+        .Add(new LexerStringStep("\u0085"))
+        .Add(new LexerStringStep("\u2028"))
+        .Add(new LexerStringStep("\u2029")));
 
-        .Add(new LexerRegexStep("SpaceCharacter", new Regex(@"\s")))
-        .Add(new OneOrMoreStep<LexerContext>("SpaceCharacters", lexer.Steps.NamedStep("SpaceCharacter")))
+      steps.Add(new SequenceStep<LexerContext>("DelimitedComment")
+        .Add(new LexerStringStep("/*"))
+        .Add(steps.NamedStep("DelimitedCommentText"), true)
+        .Add(steps.NamedStep("Asterisks"))
+        .Add(new LexerStringStep("/")));
 
-        .Add(new SequenceStep<LexerContext>("QualifiedWord")
-          .Add(lexer.Steps.NamedStep("Article"))
-          .Add(lexer.Steps.NamedStep("SpaceCharacters"))
-          .Add(lexer.Steps.NamedStep("TestRegexes")))
+      steps.Add(new OneOfStep<LexerContext>("DelimitedCommentText")
+        .Add(steps.NamedStep("DelimitedCommentSection"))
+        .Add(new SequenceStep<LexerContext>()
+          .Add(steps.NamedStep("DelimitedCommentText"))
+          .Add(steps.NamedStep("DelimitedCommentSection"))));
 
-        .RootStepName = "QualifiedWord";
+      steps.Add(new OneOfStep<LexerContext>("DelimitedCommentSection")
+        .Add(steps.NamedStep("NotAsterisk"))
+        .Add(new SequenceStep<LexerContext>()
+          .Add(steps.NamedStep("Asterisks"))
+          .Add(steps.NamedStep("NotSlash"))));
 
+      steps.Add(new OneOfStep<LexerContext>("Asterisks")
+        .Add(new LexerStringStep("*"))
+        .Add(new SequenceStep<LexerContext>()
+          .Add(steps.NamedStep("Asterisks"))
+          .Add(new LexerStringStep("*"))));
 
+      steps.Add(new LexerRegexStep("NotAsterisk", new Regex(@"[^*]")));
 
+      steps.Add(new LexerRegexStep("NotSlash", new Regex(@"[^/]")));
 
-      Console.Write("> ");
+      steps.RootStepName = "Input";
 
-      string line = Console.ReadLine();
+      //lexer.Steps.Add(new OneOfStep<LexerContext>("Article")
+      //    .Add(new LexerStringStep("The"))
+      //    .Add(new LexerStringStep("Th"))
+      //    .Add(new LexerStringStep("A")))
 
-      Console.WriteLine($"Input: {line.ToLiteral()}");
+      //  .Add(new LexerRegexStep("TestRegex", new Regex(@"[A-Za-z]")))
+      //  //.Add(new OneOrMoreStep<LexerContext>("TestRegexes", lexer.Steps.NamedStep("TestRegex")))
+
+      //  .Add(new ANotBStep<LexerContext>("NotC", lexer.Steps.NamedStep("TestRegex"), new LexerStringStep("c")))
+
+      //  .Add(new OneOfStep<LexerContext>("TestRegexes")
+      //    .Add(new SequenceStep<LexerContext>()
+      //      .Add(lexer.Steps.NamedStep("TestRegexes"))
+      //      .Add(lexer.Steps.NamedStep("NotC")))
+      //    .Add(lexer.Steps.NamedStep("NotC")))
+
+      //  .Add(new LexerRegexStep("SpaceCharacter", new Regex(@"\s")))
+      //  .Add(new OneOrMoreStep<LexerContext>("SpaceCharacters", lexer.Steps.NamedStep("SpaceCharacter")))
+
+      //  .Add(new SequenceStep<LexerContext>("QualifiedWord")
+      //    .Add(lexer.Steps.NamedStep("Article"))
+      //    .Add(lexer.Steps.NamedStep("SpaceCharacters"))
+      //    .Add(lexer.Steps.NamedStep("TestRegexes")))
+
+      //  .RootStepName = "QualifiedWord";
+
+      StringBuilder sb = new StringBuilder();
+
+      Console.WriteLine("Enter input lines (Ctrl-@ to end):");
+
+      while (true) {
+        Console.Write("> ");
+
+        string line = Console.ReadLine();
+
+        if (line == "\0") break;
+
+        sb.AppendLine(line);
+      }
+
+      string input = sb.ToString();
+
+      Console.WriteLine($"Input: {input.ToLiteral()}");
 
       Symbol[] symbols;
-      byte[] bytes = Encoding.Default.GetBytes(line);
+      byte[] bytes = Encoding.Default.GetBytes(input);
 
       using (Stream stream = new MemoryStream(bytes))
         symbols = lexer.Read(stream);
@@ -123,20 +185,16 @@ namespace rkParseTest {
 
       double seconds;
 
-      {
-        @input:
-
+      while (true) {
         Console.Write("> ");
 
         bool success = double.TryParse(Console.ReadLine().Trim(), out seconds);
 
-        if (!success) {
-          Console.ForegroundColor = ConsoleColor.Red;
-          Console.WriteLine("Invalid input.");
-          Console.ResetColor();
+        if (success) break;
 
-          goto @input;
-        }
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("Invalid input.");
+        Console.ResetColor();
       }
 
       if (seconds == 0) {

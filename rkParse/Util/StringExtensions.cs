@@ -10,7 +10,6 @@ namespace rkParse.Util {
         provider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), writer, null);
         return writer.ToString();
       }
-
     }
   }
 }

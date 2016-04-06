@@ -1,4 +1,5 @@
 ﻿using rkParse.Core.Staging;
+using rkParse.Core.Symbols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,11 +36,13 @@ namespace rkParse.Core.Steps {
 
         StepResult negResult = b.Execute(ctx);
 
-        cache.CurrentBranch = posBranch;
-
         switch (negResult) {
           case StepResult.Negative:
-            ctx.EndStaging(cache, true);
+            cache.EndBranch(negBranch, posBranch);
+
+            ctx.EndStaging(cache, true, false);
+
+            ctx.AddSymbol(new Production(Name, cache.Symbols));
 
             return StepResult.Positive;
 

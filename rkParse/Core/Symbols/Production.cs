@@ -14,8 +14,8 @@ namespace rkParse.Core.Symbols {
     protected override string StringContentsCompact => string.Join(", ", from child in children
                                                                          select child.ToStringCompact());
 
-    protected override string StringContentsMultiline => ("\n" + string.Join(",\n", from child in children
-                                                                                    select child.ToStringMultiline())).Replace("\n", "\n  ") + "\n";
+    protected override string StringContentsMultiline => children.Length == 0 ? "" : ("\n" + string.Join(",\n", from child in children
+                                                                                                                select child.ToStringMultiline())).Replace("\n", "\n  ") + "\n";
 
     protected override string StringOpen => "{ ";
     protected override string StringOpenMultiline => "{";

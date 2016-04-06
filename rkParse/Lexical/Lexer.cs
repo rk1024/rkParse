@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace rkParse.Lexical {
-  public class Lexer : Producer<Stream, LexerContext> {
+  public class Lexer : Producer<LexerContext> {
     BufferedStreamReader reader;
 
     public Lexer() { }
@@ -19,7 +19,7 @@ namespace rkParse.Lexical {
       return new LexerContext(this, reader);
     }
 
-    public override Symbol[] Read(Stream input) {
+    public Symbol[] Read(Stream input) {
       reader = new BufferedStreamReader(input);
 
       BeginRead();

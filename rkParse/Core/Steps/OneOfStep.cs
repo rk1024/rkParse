@@ -28,44 +28,57 @@ namespace rkParse.Core.Steps {
       return this;
     }
 
+    protected IEnumerable<ProducerStep<TContext>> GetValidChoices(TContext ctx) {
+      if (ctx.SafeRecursing && IsRecursive) {
+        if (ctx.CanRecurse) {
+          foreach (ProducerStep<TContext> choice in choices) {
+            if (choice.IsRecursive) yield return choice;
+          }
+        }
+        else {
+          foreach (ProducerStep<TContext> choice in choices) {
+            if (!choice.IsRecursive) yield return choice;
+          }
+        }
+      }
+      else {
+        foreach (ProducerStep<TContext> choice in choices)
+          yield return choice;
+      }
+    }
+
     protected override StepResult ExecuteInternal(TContext ctx) {
       BranchedStagingCache cache = ctx.BeginStagingBranched();
       StagingCache longest = null;
-      bool addRecursion = true;
+      bool addRecursion = false;
 
-      foreach (ProducerStep<TContext> choice in choices) {
-        if (ctx.SafeRecursing && ctx.CanRecurse && !choice.IsRecursive) continue;
-
+      foreach (ProducerStep<TContext> choice in GetValidChoices(ctx)) {
         StagingCache branch = cache.BeginSingleBranch();
         StepResult result = choice.Execute(ctx);
 
-        if (result != StepResult.AddRecursion) addRecursion = false;
-
-        if (result == StepResult.Positive) {
+        if (result == StepResult.AddRecursion) addRecursion = true;
+        else if (result == StepResult.Positive) {
           if (longest == null) goto keepBranch;
-          else if (longest.Consumed < branch.Consumed) {
+
+          if (longest.Consumed < branch.Consumed) {
             cache.EndBranch(longest);
             goto keepBranch;
           }
         }
 
         cache.EndBranch(branch);
-
         goto @continue;
 
         keepBranch:
-
         longest = branch;
 
         @continue:
-
-        if (longest != null) {
-          cache.CurrentBranch = longest;
-        }
+        if (longest != null) cache.CurrentBranch = longest;
       }
 
       if (longest == null) {
         ctx.EndStaging(cache, false);
+
         return addRecursion ? StepResult.AddRecursion : StepResult.Negative;
       }
 

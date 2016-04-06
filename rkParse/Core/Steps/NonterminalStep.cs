@@ -21,33 +21,18 @@ namespace rkParse.Core.Steps {
                                                                         where nonterm != null
                                                                         select nonterm;
 
+    protected IEnumerable<NonterminalStep<TContext>> RecursiveSubSteps => from step in NontermSubSteps
+                                                                          where step.IsRecursive
+                                                                          select step;
+
+    //NB: Performs potentially slower than RecursiveSubSteps!  (Iterates through terminal sub-steps as well)
+    protected IEnumerable<ProducerStep<TContext>> NonRecursiveSubSteps => from step in SubSteps
+                                                                          where !step.IsRecursive
+                                                                          select step;
+
     protected IEnumerable<ProducerStep<TContext>> SubStepTree {
       get {
-        HashSet<ProducerStep<TContext>> @checked = new HashSet<ProducerStep<TContext>>();
-        Queue<NonterminalStep<TContext>> queue = new Queue<NonterminalStep<TContext>>();
-
-        queue.Enqueue(this);
-
-        do {
-          NonterminalStep<TContext> nonterm = queue.Dequeue();
-
-          foreach (TerminalStep<TContext> step in nonterm.TerminalSubSteps) {
-            if (!@checked.Contains(step)) {
-              @checked.Add(step);
-
-              yield return step;
-            }
-          }
-
-          foreach (NonterminalStep<TContext> step in nonterm.NontermSubSteps) {
-            if (!@checked.Contains(step)) {
-              @checked.Add(step);
-              queue.Enqueue(step);
-
-              yield return step;
-            }
-          }
-        } while (queue.Any());
+        return GetSubStepTree(e => true);
       }
     }
 
@@ -78,7 +63,40 @@ namespace rkParse.Core.Steps {
     }
 
     public virtual bool MayDeferTo(ProducerStep<TContext> descendant) {
-      return SubStepTree.Any(e => e == descendant);
+      return SubStepTree.Any(e => descendant.Equals(e));
+    }
+
+    public IEnumerable<ProducerStep<TContext>> GetSubStepTree(Func<ProducerStep<TContext>, bool> predicate) {
+      HashSet<ProducerStep<TContext>> @checked = new HashSet<ProducerStep<TContext>>();
+      Queue<NonterminalStep<TContext>> queue = new Queue<NonterminalStep<TContext>>();
+
+      queue.Enqueue(this);
+
+      do {
+        NonterminalStep<TContext> nonterm = queue.Dequeue();
+
+        foreach (TerminalStep<TContext> step in nonterm.TerminalSubSteps) {
+          if (@checked.Contains(step)) continue;
+          else {
+            @checked.Add(step);
+
+            if (predicate(step))
+              yield return step;
+          }
+        }
+
+        foreach (NonterminalStep<TContext> step in nonterm.NontermSubSteps) {
+          if (@checked.Contains(step)) continue;
+          else {
+            @checked.Add(step);
+
+            if (predicate(step)) {
+              queue.Enqueue(step);
+              yield return step;
+            }
+          }
+        }
+      } while (queue.Any());
     }
   }
 }

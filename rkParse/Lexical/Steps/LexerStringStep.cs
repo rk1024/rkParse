@@ -1,6 +1,7 @@
 ﻿using rkParse.Core.Steps;
 using rkParse.Core.Symbols;
 using rkParse.Lexical.Symbols;
+using rkParse.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,10 @@ namespace rkParse.Lexical.Steps {
       }
 
       return match;
+    }
+
+    public override string ToString() {
+      return $"{base.ToString()}({pattern.ToLiteral()})";
     }
   }
 }

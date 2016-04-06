@@ -22,7 +22,12 @@ namespace rkParse.Lexical {
 
     public bool QueryStringAhead(string match, int start) {
       string peek;
-      return reader.PeekAhead(out peek, Position + start, match.Length) == match.Length && peek == match;
+
+      bool ret = reader.PeekAhead(out peek, Position + start, match.Length) == match.Length && peek == match;
+
+      Print($"&2;Querying for string &3;{match}&2; at offset &5;{start}&2; (position &5;{Position + start}&2;); {(ret ? "&2;match" : "&c;no match")}&2; found.");
+
+      return ret;
     }
 
     public bool QueryString(string match) => QueryStringAhead(match, 0);
@@ -38,6 +43,8 @@ namespace rkParse.Lexical {
 
       bool match = pattern.IsMatch(peek);
       if (!match) peek = null;
+
+      Print($"&2;Querying for &5;{count}&2;-count regex &3;{pattern.ToString()}&2; at offset &5;{start}&2; (position &5;{Position + start}&2;); {(match ? "&2;match" : "&c;no match")}&2; found.");
 
       return match;
     }
